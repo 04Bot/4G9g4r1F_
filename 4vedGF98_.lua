@@ -237,9 +237,9 @@ end
 
 local function reset()
 	local coinText
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags").Container.Candy.CurrencyFrame.Icon.Coins and player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins:IsA("Instance") then
+	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags").Container.Candy.CurrencyFrame.Icon.Coins then
 		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.Full
-	elseif player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full and player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full:IsA("Instance") then
+	elseif player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full then
 		coinText = player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full
 	else
 		-- Si coinText n'existe pas
