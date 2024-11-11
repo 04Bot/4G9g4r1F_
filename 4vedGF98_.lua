@@ -237,10 +237,10 @@ end
 
 local function reset()
 	local coinText
-	if not player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins then
-		coinText = player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full
-	else
+	if player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins then
 		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.Full
+	else
+		coinText = player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
