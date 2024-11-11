@@ -240,8 +240,8 @@ local function reset()
 	print('v444')
 	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
 		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.Full
-	elseif player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full then
-		coinText = player.PlayerGui.MainGUI.Vestibule.Dock.CoinBags.Container.Candy.Full
+	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
+		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.Full
 	else
 		-- Si coinText n'existe pas
 		print("CoinText n'existe pas")
