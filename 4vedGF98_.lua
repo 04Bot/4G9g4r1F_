@@ -270,7 +270,7 @@ local function moveToCoin()
 			end)
 		end
 	else
-		if bodyPosition then
+		if rootPart:FindFirstChild("BodyPosition) then
 			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
