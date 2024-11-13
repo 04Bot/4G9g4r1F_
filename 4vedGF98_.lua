@@ -2,7 +2,7 @@
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
-screen.Parent = game.Players.LocalPlayer.PlayerGui
+screen.Parent = game.CoreGui
 
 local close_openGUI = Instance.new("TextButton")
 close_openGUI.BackgroundTransparency = 0.5
@@ -114,6 +114,7 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local antiAuto = createGui("Anti Auto Farm")
+local randomCoin = createGui("Random Coin")
 
 
 local active_AutoFarm = false
@@ -181,7 +182,13 @@ local function moveToCoin()
 	if not active_AutoFarm or isFarming then return end
 
 	isFarming = true  -- Définir le drapeau pour empêcher la réexécution
-	local coin, distance = findNearestCoin()
+	local coin, distance
+	
+	if active_RandomCoin then
+		coin, distance = randomCoin()
+	else
+		coin, distance = findNearestCoin()
+	end
 
 	if coin then
 		setNoClip(true)
@@ -381,6 +388,25 @@ antiAuto.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		antiAuto()
+	end
+end)
+
+randomCoin.MouseButton1Click:Connect(function()
+	local outerFrame = autoFarm
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_RandomCoin then
+		active_RandomCoin = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_RandomCoin = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 	end
 end)
 
