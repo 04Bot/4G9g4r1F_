@@ -113,7 +113,7 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
-local antiAuto = createGui("Anti Auto Farm")
+local antiAutoFarm = createGui("Anti Auto Farm")
 local randomCoin = createGui("Random Coin")
 
 
@@ -371,7 +371,7 @@ local function antiAuto()
 	end)
 end
 
-antiAuto.MouseButton1Click:Connect(function()
+antiAutoFarm.MouseButton1Click:Connect(function()
 	local outerFrame = autoFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
