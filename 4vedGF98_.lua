@@ -113,10 +113,11 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
-local blurtRole = createGui("Blurt Role")
+local antiAuto = createGui("Anti Auto Farm")
 
 
 local active_AutoFarm = false
+local active_AntiAutoFarm = false
 
 
 local player = game.Players.LocalPlayer
@@ -126,6 +127,7 @@ local humanoid = character:WaitForChild("Humanoid")
 local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
+local coinText
 
 -- Fonction pour activer le noclip
 local function setNoClip(state)
@@ -211,6 +213,11 @@ local function moveToCoin()
 			isFarming = false
 			moveToCoin()
 		else
+			bodyPosition = Instance.new("BodyPosition")
+			bodyPosition.P = 0
+			bodyPosition.D = 0
+			bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+			bodyPosition.Parent = character.HumanoidRootPart
 			local duration = distance / speed
 			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
@@ -227,6 +234,9 @@ local function moveToCoin()
 			end)
 		end
 	else
+		if bodyPosition then
+			bodyPosition:Destro()
+		end
 		print("Aucune pièce trouvée.")
 		setNoClip(false)
 		isFarming = false
@@ -237,14 +247,10 @@ end
 
 local function reset()
 	local coinText
-	print('v444')
 	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
 		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.Full
 	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
 		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.Full
-	else
-		-- Si coinText n'existe pas
-		print("CoinText n'existe pas")
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
@@ -256,12 +262,6 @@ end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
-	bodyPosition = Instance.new("BodyPosition")
-	bodyPosition.P = 0
-	bodyPosition.D = 0
-	bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-	bodyPosition.Parent = character.HumanoidRootPart
-
 	active_AutoFarm = true
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
@@ -294,6 +294,96 @@ autoFarm.MouseButton1Click:Connect(function()
 	end
 end)
 
+-- Fonction pour choisir une pièce aléatoire parmi celles disponibles
+local function randomCoin()
+	local coinContainers = {}  -- Table pour stocker tous les conteneurs de pièces
+
+	-- Remplir le tableau avec les conteneurs de pièces trouvés dans le Workspace
+	for _, obj in ipairs(game.Workspace:GetDescendants()) do
+		if obj.Name == "CoinContainer" then
+			table.insert(coinContainers, obj)
+		end
+	end
+
+	-- Si aucun conteneur de pièces n'est trouvé, retourne nil
+	if #coinContainers == 0 then
+		return nil
+	end
+
+	-- Choisit un conteneur de pièces aléatoire
+	local randomContainer = coinContainers[math.random(1, #coinContainers)]
+	local coins = {}
+
+	-- Remplit un tableau avec toutes les pièces disponibles dans le conteneur choisi
+	for _, coin in ipairs(randomContainer:GetDescendants()) do
+		if coin:IsA("MeshPart") and coin:FindFirstChild("TouchInterest") then
+			table.insert(coins, coin)
+		end
+	end
+
+	-- Si aucune pièce n'est trouvée dans le conteneur, retourne nil
+	if #coins == 0 then
+		return nil
+	end
+
+	-- Retourne une pièce aléatoire
+	return coins[math.random(1, #coins)]
+end
+
+-- Fonction de vérification avec délai de 5 secondes
+local function checkText()
+	wait(5)
+
+	-- Vérifie si le texte n'a pas changé et n'est ni "0" ni "40"
+	if coinText.Text ~= "0" and coinText.Text ~= "40" then
+		print("Le texte n'a pas changé après " .. delayTime .. " secondes, déplacement vers une autre pièce.")
+
+		-- Choisit une pièce aléatoire et fait une action avec elle
+		local newCoin = randomCoin()
+		if newCoin then
+			-- Exécute l'action de déplacement vers la pièce aléatoire (par exemple, changer la position)
+			rootPart.CFrame = CFrame.new(newCoin.Position)
+		else
+			print("Aucune pièce aléatoire trouvée.")
+		end
+	end
+end
+
+local function antiAuto()
+	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
+		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins
+	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
+		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins
+	end
+
+	coinText:GetPropertyChangedSignal("Text"):Connect(function()
+		-- Si le texte change et n'est ni "0" ni "40", relance la vérification
+		if coinText.Text ~= "0" and coinText.Text ~= "40" then
+			coroutine.wrap(checkText)()
+		end
+	end)
+end
+
+antiAuto.MouseButton1Click:Connect(function()
+	local outerFrame = autoFarm
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AntiAutoFarm then
+		active_AntiAutoFarm = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_AntiAutoFarm = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+		antiAuto()
+	end
+end)
+
 close_openGUI.MouseButton1Click:Connect(function()
 	if close_openGUI.Text == "<b>Close GUI</b>" then
 		mainBackground.Visible = false
@@ -316,6 +406,9 @@ local function onCharacterAdded(newCharacter)
 		wait(2)
 		startAutoFarm()
 		reset()
+	end
+	if active_AntiAutoFarm then
+		antiAuto()
 	end
 end
 
