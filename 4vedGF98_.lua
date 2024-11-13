@@ -1,7 +1,10 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/s-o-a-b/nexus/main/loadstring"))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/4G9g4r1F_/refs/heads/main/4vedGF98_.lua"))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/teamers-hub/refs/heads/main/dex.lua"))()
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
-screen.Parent = game.CoreGui
+screen.Parent = game.Players.LocalPlayer.PlayerGui
 
 local close_openGUI = Instance.new("TextButton")
 close_openGUI.BackgroundTransparency = 0.5
@@ -113,11 +116,12 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local antiAutoFarm = createGui("Anti Auto Farm")
-local randomCoin = createGui("Random Coin")
+local getRandomCoin = createGui("Random Coin")
 
 
 local active_AutoFarm = false
 local active_AntiAutoFarm = false
+local active_RandomCoin = false
 
 
 local player = game.Players.LocalPlayer
@@ -175,6 +179,35 @@ local function findNearestCoin()
 	return closestCoin, closestDistance
 end
 
+local function randomCoin()
+	local coins = {}
+
+	-- Remplir le tableau avec les pièces trouvées dans les conteneurs CoinContainer du Workspace
+	for _, container in ipairs(game.Workspace:GetDescendants()) do
+		if container.Name == "CoinContainer" then
+			for _, coin in ipairs(container:GetDescendants()) do
+				if coin:IsA("MeshPart") then
+					print("saucisse")
+					if not coin.Parent:FindFirstChild("TouchInterest") then
+						-- Si pas de "TouchInterest", passer au prochain coin
+						continue
+					end
+
+					table.insert(coins, coin)
+				end
+			end
+		end
+	end
+
+	-- Retourne une pièce aléatoire si elle existe, sinon nil
+	if #coins == 0 then
+		return nil
+	end
+
+	local randomCoin = coins[math.random(1, #coins)]
+	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
+end
+
 local isFarming = false
 
 local function moveToCoin()
@@ -182,7 +215,7 @@ local function moveToCoin()
 
 	isFarming = true  -- Définir le drapeau pour empêcher la réexécution
 	local coin, distance
-	
+
 	if active_RandomCoin then
 		coin, distance = randomCoin()
 	else
@@ -241,7 +274,7 @@ local function moveToCoin()
 		end
 	else
 		if bodyPosition then
-			bodyPosition:Destro()
+			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
 		setNoClip(false)
@@ -276,7 +309,6 @@ end
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
 	active_AutoFarm = false
-	bodyPosition:Destroy()
 	rootTween:Cancel()
 	setNoClip(false)
 end
@@ -300,54 +332,18 @@ autoFarm.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Fonction pour choisir une pièce aléatoire parmi celles disponibles
-local function randomCoin()
-	local coinContainers = {}  -- Table pour stocker tous les conteneurs de pièces
-
-	-- Remplir le tableau avec les conteneurs de pièces trouvés dans le Workspace
-	for _, obj in ipairs(game.Workspace:GetDescendants()) do
-		if obj.Name == "CoinContainer" then
-			table.insert(coinContainers, obj)
-		end
-	end
-
-	-- Si aucun conteneur de pièces n'est trouvé, retourne nil
-	if #coinContainers == 0 then
-		return nil
-	end
-
-	-- Choisit un conteneur de pièces aléatoire
-	local randomContainer = coinContainers[math.random(1, #coinContainers)]
-	local coins = {}
-
-	-- Remplit un tableau avec toutes les pièces disponibles dans le conteneur choisi
-	for _, coin in ipairs(randomContainer:GetDescendants()) do
-		if coin:IsA("MeshPart") and coin:FindFirstChild("TouchInterest") then
-			table.insert(coins, coin)
-		end
-	end
-
-	-- Si aucune pièce n'est trouvée dans le conteneur, retourne nil
-	if #coins == 0 then
-		return nil
-	end
-
-	-- Retourne une pièce aléatoire
-	return coins[math.random(1, #coins)]
-end
-
 -- Fonction de vérification avec délai de 5 secondes
-local function checkText()
+local function checkText(initialText)
 	wait(5)
 
 	-- Vérifie si le texte n'a pas changé et n'est ni "0" ni "40"
-	if coinText.Text ~= "0" and coinText.Text ~= "40" then
-		print("Le texte n'a pas changé après " .. delayTime .. " secondes, déplacement vers une autre pièce.")
+	if coinText.Text == initialText and coinText.Text ~= "0" and coinText.Text ~= "40" then
+		print("Le texte n'a pas changé après " .. tostring(5) .. " secondes, déplacement vers une autre pièce.")
 
 		-- Choisit une pièce aléatoire et fait une action avec elle
-		local newCoin = randomCoin()
-		if newCoin then
-			local duration = distance / speed
+		local coin, distance = randomCoin()
+		if coin then
+			local duration = distance / 25
 			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
 
@@ -376,13 +372,13 @@ local function antiAuto()
 	coinText:GetPropertyChangedSignal("Text"):Connect(function()
 		-- Si le texte change et n'est ni "0" ni "40", relance la vérification
 		if coinText.Text ~= "0" and coinText.Text ~= "40" then
-			coroutine.wrap(checkText)()
+			coroutine.wrap(function() checkText(coinText.Text) end)()
 		end
 	end)
 end
 
 antiAutoFarm.MouseButton1Click:Connect(function()
-	local outerFrame = autoFarm
+	local outerFrame = antiAutoFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
 	if active_AntiAutoFarm then
@@ -401,8 +397,8 @@ antiAutoFarm.MouseButton1Click:Connect(function()
 	end
 end)
 
-randomCoin.MouseButton1Click:Connect(function()
-	local outerFrame = autoFarm
+getRandomCoin.MouseButton1Click:Connect(function()
+	local outerFrame = getRandomCoin
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
 	if active_RandomCoin then
