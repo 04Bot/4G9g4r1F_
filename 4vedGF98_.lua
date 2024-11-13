@@ -1,7 +1,7 @@
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
-screen.Parent = game.CoreGui
+screen.Parent = game.Players.LocalPlayer.PlayerGui
 
 local close_openGUI = Instance.new("TextButton")
 close_openGUI.BackgroundTransparency = 0.5
