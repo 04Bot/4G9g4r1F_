@@ -1,7 +1,7 @@
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
-screen.Parent = game.Players.LocalPlayer.PlayerGui
+screen.Parent = game.CoreGui
 
 local close_openGUI = Instance.new("TextButton")
 close_openGUI.BackgroundTransparency = 0.5
@@ -307,6 +307,9 @@ end
 local function stopAutoFarm()
 	active_AutoFarm = false
 	rootTween:Cancel()
+	if bodyPosition then
+		bodyPosition:Destroy()
+	end
 	setNoClip(false)
 end
 
