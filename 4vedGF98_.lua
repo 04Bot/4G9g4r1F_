@@ -1,6 +1,3 @@
---loadstring(game:HttpGet("https://raw.githubusercontent.com/s-o-a-b/nexus/main/loadstring"))()
---loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/4G9g4r1F_/refs/heads/main/4vedGF98_.lua"))()
---loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/teamers-hub/refs/heads/main/dex.lua"))()
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
@@ -259,7 +256,7 @@ local function moveToCoin()
 			bodyPosition.Parent = character.HumanoidRootPart
 			local duration = distance / speed
 			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
+			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
 
 			rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
 			rootTween:Play()
@@ -339,25 +336,12 @@ local function checkText(initialText)
 	-- Vérifie si le texte n'a pas changé et n'est ni "0" ni "40"
 	if coinText.Text == initialText and coinText.Text ~= "0" and coinText.Text ~= "40" then
 		print("Le texte n'a pas changé après " .. tostring(5) .. " secondes, déplacement vers une autre pièce.")
-
-		-- Choisit une pièce aléatoire et fait une action avec elle
-		local coin, distance = randomCoin()
-		if coin then
-			local duration = distance / 25
-			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
-
-			rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
-			rootTween:Play()
-
-			rootTween.Completed:Connect(function()
-				setNoClip(false)
-				wait(0.1)
-				isFarming = false
-				moveToCoin()
-			end)
+		if active_RandomCoin then
+			moveToCoin()
 		else
-			print("Aucune pièce aléatoire trouvée.")
+			active_RandomCoin = true
+			moveToCoin()
+			active_RandomCoin = false
 		end
 	end
 end
