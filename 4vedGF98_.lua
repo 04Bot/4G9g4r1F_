@@ -1,4 +1,3 @@
---loadstring(game:HttpGet("https://raw.githubusercontent.com/s-o-a-b/nexus/main/loadstring"))()
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
