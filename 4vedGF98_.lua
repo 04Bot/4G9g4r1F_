@@ -347,8 +347,19 @@ local function checkText()
 		-- Choisit une pièce aléatoire et fait une action avec elle
 		local newCoin = randomCoin()
 		if newCoin then
-			-- Exécute l'action de déplacement vers la pièce aléatoire (par exemple, changer la position)
-			rootPart.CFrame = CFrame.new(newCoin.Position)
+			local duration = distance / speed
+			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
+
+			rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+			rootTween:Play()
+
+			rootTween.Completed:Connect(function()
+				setNoClip(false)
+				wait(0.1)
+				isFarming = false
+				moveToCoin()
+			end)
 		else
 			print("Aucune pièce aléatoire trouvée.")
 		end
