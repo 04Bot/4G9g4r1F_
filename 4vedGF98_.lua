@@ -270,13 +270,13 @@ local function moveToCoin()
 			end)
 		end
 	else
-		if rootPart:FindFirstChild("BodyPosition) then
+		wait(1)
+		if bodyPosition then
 			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
 		setNoClip(false)
 		isFarming = false
-		wait(1)
 		moveToCoin()
 	end
 end
