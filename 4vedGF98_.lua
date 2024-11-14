@@ -114,11 +114,13 @@ end
 local autoFarm = createGui("Auto Farm")
 local antiAutoFarm = createGui("Anti Auto Farm")
 local getRandomCoin = createGui("Random Coin")
+local beADebris = createGui("Be A Debris")
 
 
 local active_AutoFarm = false
 local active_AntiAutoFarm = false
 local active_RandomCoin = false
+local active_BeADebris = false
 
 
 local player = game.Players.LocalPlayer
@@ -129,6 +131,7 @@ local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
 local coinText
+local beDebris
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -312,6 +315,16 @@ local function stopAutoFarm()
 	end
 end
 
+local function debris()
+	beDebris = Instance.new("BodyPosition")
+	beDebris.P = 0
+	beDebris.D = 0
+	beDebris.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	beDebris.Parent = character.HumanoidRootPart
+	
+	humanoid.PlatformStand = true
+end
+
 autoFarm.MouseButton1Click:Connect(function()
 	local outerFrame = autoFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
@@ -402,6 +415,33 @@ getRandomCoin.MouseButton1Click:Connect(function()
 	end
 end)
 
+beADebris.MouseButton1Click:Connect(function()
+	local outerFrame = beADebris
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_BeADebris then
+		active_BeADebris = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+		
+		if beDebris then
+			beDebris:Destroy()
+		end
+		if humanoid.PlatformStand == true then
+			humanoid.PlatformStand = false
+		end
+	else
+		active_BeADebris = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+		debris()
+	end
+end)
+
 close_openGUI.MouseButton1Click:Connect(function()
 	if close_openGUI.Text == "<b>Close GUI</b>" then
 		mainBackground.Visible = false
@@ -418,6 +458,7 @@ end)
 local function onCharacterAdded(newCharacter)
 	character = newCharacter
 	rootPart = character:WaitForChild("HumanoidRootPart")
+	humanoid = character:WaitForChild("Humanoid")
 
 	if active_AutoFarm then
 		stopAutoFarm()
@@ -428,9 +469,10 @@ local function onCharacterAdded(newCharacter)
 	if active_AntiAutoFarm then
 		antiAuto()
 	end
+	if active_BeADebris then
+		debris()
+	end
 end
 
 -- Initialisation
 player.CharacterAdded:Connect(onCharacterAdded)
-character = player.Character or player.CharacterAdded:Wait()
-rootPart = character:WaitForChild("HumanoidRootPart")
