@@ -130,15 +130,6 @@ local rootTween
 local bodyPosition
 local coinText
 
--- Fonction pour activer le noclip
-local function setNoClip(state)
-	for _, part in ipairs(character:GetDescendants()) do
-		if part:IsA("BasePart") or part:IsA("MeshPart") then
-			part.CanCollide = not state  -- Active/désactive la collision
-		end
-	end
-end
-
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
 	local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)  -- Durée de 0.1 seconde avec un easing smooth
@@ -184,7 +175,6 @@ local function randomCoin()
 		if container.Name == "CoinContainer" then
 			for _, coin in ipairs(container:GetDescendants()) do
 				if coin:IsA("MeshPart") then
-					print("saucisse")
 					if not coin.Parent:FindFirstChild("TouchInterest") then
 						-- Si pas de "TouchInterest", passer au prochain coin
 						continue
@@ -220,13 +210,11 @@ local function moveToCoin()
 	end
 
 	if coin then
-		setNoClip(true)
 
 		local coinRemovedConnection
 		coinRemovedConnection = coin.AncestryChanged:Connect(function()
 			if not coin:IsDescendantOf(workspace) then
 				coinRemovedConnection:Disconnect()
-				setNoClip(false)
 				wait(0.1)
 				isFarming = false  -- Réinitialiser le drapeau
 				moveToCoin()  -- Relancer la recherche de pièce
@@ -235,9 +223,7 @@ local function moveToCoin()
 
 		if distance <= 1 then
 			coinRemovedConnection:Disconnect()
-			setNoClip(false)
 			wait(0.1)
-			--coin:Destroy()
 			isFarming = false
 			moveToCoin()
 		elseif distance > 300 then
@@ -249,11 +235,14 @@ local function moveToCoin()
 			isFarming = false
 			moveToCoin()
 		else
-			bodyPosition = Instance.new("BodyPosition")
-			bodyPosition.P = 0
-			bodyPosition.D = 0
-			bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-			bodyPosition.Parent = character.HumanoidRootPart
+			if not bodyPosition then
+				bodyPosition = Instance.new("BodyPosition")
+				bodyPosition.P = 0
+				bodyPosition.D = 0
+				bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+				bodyPosition.Parent = character.HumanoidRootPart
+			end
+
 			local duration = distance / speed
 			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
@@ -263,7 +252,6 @@ local function moveToCoin()
 
 			rootTween.Completed:Connect(function()
 				coinRemovedConnection:Disconnect()
-				setNoClip(false)
 				wait(0.1)
 				isFarming = false
 				moveToCoin()
@@ -275,7 +263,6 @@ local function moveToCoin()
 			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
-		setNoClip(false)
 		isFarming = false
 		moveToCoin()
 	end
@@ -301,6 +288,13 @@ local function startAutoFarm()
 	active_AutoFarm = true
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
+	while active_AutoFarm do
+		for _, part in ipairs(character:GetDescendants()) do
+			if part:IsA("BasePart") or part:IsA("MeshPart") then
+				part.CanCollide = false  -- Active/désactive la collision
+			end
+		end
+	end
 end
 
 -- Fonction pour arrêter l'auto-farm
@@ -310,7 +304,11 @@ local function stopAutoFarm()
 	if bodyPosition then
 		bodyPosition:Destroy()
 	end
-	setNoClip(false)
+	for _, part in ipairs(character:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("MeshPart") then
+			part.CanCollide = true -- Active/désactive la collision
+		end
+	end
 end
 
 autoFarm.MouseButton1Click:Connect(function()
