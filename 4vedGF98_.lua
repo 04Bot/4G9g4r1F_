@@ -289,6 +289,7 @@ local function startAutoFarm()
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
+		wait()
 		for _, part in ipairs(character:GetDescendants()) do
 			if part:IsA("BasePart") or part:IsA("MeshPart") then
 				part.CanCollide = false  -- Active/désactive la collision
