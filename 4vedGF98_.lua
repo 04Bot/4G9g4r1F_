@@ -134,6 +134,7 @@ local rootTween
 local bodyPosition
 local coinText
 local beDebris
+local p
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
