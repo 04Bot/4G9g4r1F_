@@ -1,3 +1,6 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/s-o-a-b/nexus/main/loadstring"))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/4G9g4r1F_/refs/heads/main/4vedGF98_.lua"))()
+
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
@@ -134,7 +137,6 @@ local rootTween
 local bodyPosition
 local coinText
 local beDebris
-local p = {"Blox_3955"}
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -201,51 +203,6 @@ local function randomCoin()
 	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
 end
 
-local function findFarthestCoinFromPlayers()
-	local farthestCoin = nil
-	local maxDistance = -math.huge
-
-	-- Stocker les positions des joueurs au début
-	local playerPositions = {}
-	for _, playerName in ipairs(p) do
-		local player = game.Players:FindFirstChild(playerName)
-		if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			playerPositions[playerName] = player.Character.HumanoidRootPart.Position
-		end
-	end
-
-	-- Parcourt tous les objets dans le Workspace pour trouver les pièces
-	for _, container in ipairs(game.Workspace:GetDescendants()) do
-		if container.Name == "CoinContainer" then
-			for _, coin in ipairs(container:GetDescendants()) do
-				if coin:IsA("MeshPart") then
-					-- Vérifie si le parent du coin contient un objet "TouchInterest"
-					if not coin.Parent:FindFirstChild("TouchInterest") then
-						continue -- Ignorer cette pièce
-					end
-
-					-- Calculer la distance minimale par rapport à tous les joueurs
-					local minPlayerDistance = math.huge
-					for _, position in pairs(playerPositions) do
-						local playerDistance = (coin.Position - position).Magnitude
-						if playerDistance < minPlayerDistance then
-							minPlayerDistance = playerDistance
-						end
-					end
-
-					-- Met à jour la pièce la plus éloignée selon la distance minimale avec les joueurs
-					if minPlayerDistance > maxDistance then
-						maxDistance = minPlayerDistance
-						farthestCoin = coin
-					end
-				end
-			end
-		end
-	end
-
-	return farthestCoin, maxDistance
-end
-
 local isFarming = false
 
 local function moveToCoin()
@@ -257,7 +214,7 @@ local function moveToCoin()
 	if active_RandomCoin then
 		coin, distance = randomCoin()
 	elseif active_FarthestCoinFromPlayers then
-		coin, distance = findFarthestCoinFromPlayers()
+		coin, distance = findCoinBasedOnDistance()
 	else
 		coin, distance = findNearestCoin()
 	end
