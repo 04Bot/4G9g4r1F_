@@ -1,6 +1,3 @@
---loadstring(game:HttpGet("https://raw.githubusercontent.com/s-o-a-b/nexus/main/loadstring"))()
---loadstring(game:HttpGet("https://raw.githubusercontent.com/04Bot/4G9g4r1F_/refs/heads/main/4vedGF98_.lua"))()
-
 local screen = Instance.new("ScreenGui")
 screen.ResetOnSpawn = false
 screen.AutoLocalize = false
@@ -203,41 +200,43 @@ local function randomCoin()
 	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
 end
 
-local function findFarthestCoinFromPlayers()
-    local players = {"Blox_3955"}
-    local farthestCoin = nil
-    local maxMinDistance = -math.huge -- Plus grand minimum des distances
-    local playerCharacter = player.Character or player.CharacterAdded:Wait()
+local function findFarthestCoinFromPlayer(targetPlayer)
+	local farthestCoin = nil
+	local farthestDistance = 0
 
-    -- Parcourir tous les conteneurs de pièces
-    for _, container in ipairs(game.Workspace:GetDescendants()) do
-        if container.Name == "CoinContainer" then
-            for _, coin in ipairs(container:GetDescendants()) do
-                if coin:IsA("MeshPart") and coin.Parent:FindFirstChild("TouchInterest") then
-                    local minDistanceToPlayers = math.huge -- Distance minimale pour cette pièce
+	-- Chercher dans tous les containers de pièces
+	for _, obj in ipairs(game.Workspace:GetDescendants()) do
+		if obj.Name == "CoinContainer" then
+			for _, coin in ipairs(obj:GetDescendants()) do
+				if coin:IsA("MeshPart") then
+					-- Vérifier si le coin a un "TouchInterest"
+					if not coin.Parent:FindFirstChild("TouchInterest") then
+						continue
+					end
 
-                    -- Calculer la distance entre la pièce et tous les joueurs
-                    for _, otherPlayer in ipairs(players) do
-                        if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            local otherRootPart = otherPlayer.Character.HumanoidRootPart
-                            local distance = (coin.Position - otherRootPart.Position).Magnitude
-                            if distance < minDistanceToPlayers then
-                                minDistanceToPlayers = distance
-                            end
-                        end
-                    end
+					local distance = (coin.Position - game.Workspace:FindFirstChild(targetPlayer):FindFirstChild("HumanoidRootPart").Position).Magnitude
+					if distance > farthestDistance then
+						farthestDistance = distance
+						farthestCoin = coin
+					end
+				end
+			end
+		end
+	end
 
-                    -- Mettre à jour la pièce si elle maximise la distance minimale
-                    if minDistanceToPlayers > maxMinDistance then
-                        maxMinDistance = minDistanceToPlayers
-                        farthestCoin = coin
-                    end
-                end
-            end
-        end
-    end
+	return farthestCoin, farthestDistance
+end
 
-    return farthestCoin, maxMinDistance
+local function getDistanceBetweenPlayers(player1, player2)
+	local char1 = player1.Character
+	local char2 = game.Workspace:FindFirstChild(player2)
+
+	if char1 and char2 then
+		local pos1 = char1:WaitForChild("HumanoidRootPart").Position
+		local pos2 = char2:WaitForChild("HumanoidRootPart").Position
+		return (pos1 - pos2).Magnitude
+	end
+	return math.huge -- Si les personnages n'existent pas, renvoie une valeur très grande
 end
 
 local isFarming = false
@@ -251,7 +250,27 @@ local function moveToCoin()
 	if active_RandomCoin then
 		coin, distance = randomCoin()
 	elseif active_FarthestCoinFromPlayers then
-		coin, distance = findCoinBasedOnDistance()
+		-- Vérifier si un autre joueur est proche de nous (distance <= 100)
+		local closestPlayerDistance = math.huge
+		local closestPlayer = nil
+		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4"}
+
+		for _, otherPlayer in pairs(p) do
+			if otherPlayer ~= player then  -- Ignorer le joueur lui-même
+				local distance = getDistanceBetweenPlayers(player, otherPlayer)
+				if distance <= 10 and distance < closestPlayerDistance then
+					closestPlayerDistance = distance
+					closestPlayer = otherPlayer
+				end
+			end
+		end
+		
+		if closestPlayer then
+			print(closestPlayer)
+			coin, distance = findFarthestCoinFromPlayer(closestPlayer)
+		else
+			coin, distance = findNearestCoin()
+		end
 	else
 		coin, distance = findNearestCoin()
 	end
@@ -365,7 +384,7 @@ local function debris()
 	beDebris.D = 0
 	beDebris.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 	beDebris.Parent = character.HumanoidRootPart
-	
+
 	humanoid.PlatformStand = true
 end
 
@@ -469,7 +488,7 @@ beADebris.MouseButton1Click:Connect(function()
 		outerFrame.BackgroundTransparency = 1
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
-		
+
 		if beDebris then
 			beDebris:Destroy()
 		end
