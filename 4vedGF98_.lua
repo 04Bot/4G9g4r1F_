@@ -114,6 +114,7 @@ end
 local autoFarm = createGui("Auto Farm")
 local antiAutoFarm = createGui("Anti Auto Farm")
 local getRandomCoin = createGui("Random Coin")
+local farthestCoinFromPlayers = createGui("Farthest Coin From Players")
 local beADebris = createGui("Be A Debris")
 
 
@@ -121,6 +122,7 @@ local active_AutoFarm = false
 local active_AntiAutoFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
+local active_FarthestCoinFromPlayers = false
 
 
 local player = game.Players.LocalPlayer
@@ -198,6 +200,45 @@ local function randomCoin()
 	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
 end
 
+local function findFarthestCoinFromPlayers()
+	local farthestCoin = nil
+	local maxDistance = -math.huge
+
+	-- Parcourt tous les objets dans le Workspace pour trouver les pièces
+	for _, container in ipairs(game.Workspace:GetDescendants()) do
+		if container.Name == "CoinContainer" then
+			for _, coin in ipairs(container:GetDescendants()) do
+				if coin:IsA("MeshPart") then
+					-- Vérifie si le parent du coin contient un objet "TouchInterest"
+					if not coin.Parent:FindFirstChild("TouchInterest") then
+						-- Si pas de "TouchInterest", passer au prochain coin
+						continue
+					end
+
+					-- Calculer la distance totale minimale par rapport à tous les joueurs
+					local minPlayerDistance = math.huge
+					for _, player in ipairs(p) do
+						if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+							local playerDistance = (coin.Position - player.Character.HumanoidRootPart.Position).Magnitude
+							if playerDistance < minPlayerDistance then
+								minPlayerDistance = playerDistance
+							end
+						end
+					end
+
+					-- Met à jour la pièce la plus éloignée selon la distance minimale avec les joueurs
+					if minPlayerDistance > maxDistance then
+						maxDistance = minPlayerDistance
+						farthestCoin = coin
+					end
+				end
+			end
+		end
+	end
+
+	return farthestCoin, maxDistance
+end
+
 local isFarming = false
 
 local function moveToCoin()
@@ -208,6 +249,8 @@ local function moveToCoin()
 
 	if active_RandomCoin then
 		coin, distance = randomCoin()
+	elseif active_FarthestCoinFromPlayers then
+		coin, distance = findFarthestCoinFromPlayers()
 	else
 		coin, distance = findNearestCoin()
 	end
@@ -439,6 +482,25 @@ beADebris.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		debris()
+	end
+end)
+
+farthestCoinFromPlayers.MouseButton1Click:Connect(function()
+	local outerFrame = farthestCoinFromPlayers
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_FarthestCoinFromPlayers then
+		active_FarthestCoinFromPlayers = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_FarthestCoinFromPlayers = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 	end
 end)
 
