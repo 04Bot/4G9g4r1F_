@@ -205,6 +205,15 @@ local function findFarthestCoinFromPlayers()
 	local farthestCoin = nil
 	local maxDistance = -math.huge
 
+	-- Stocker les positions des joueurs au début
+	local playerPositions = {}
+	for _, playerName in ipairs(p) do
+		local player = game.Players:FindFirstChild(playerName)
+		if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			playerPositions[playerName] = player.Character.HumanoidRootPart.Position
+		end
+	end
+
 	-- Parcourt tous les objets dans le Workspace pour trouver les pièces
 	for _, container in ipairs(game.Workspace:GetDescendants()) do
 		if container.Name == "CoinContainer" then
@@ -212,18 +221,15 @@ local function findFarthestCoinFromPlayers()
 				if coin:IsA("MeshPart") then
 					-- Vérifie si le parent du coin contient un objet "TouchInterest"
 					if not coin.Parent:FindFirstChild("TouchInterest") then
-						-- Si pas de "TouchInterest", passer au prochain coin
-						continue
+						continue -- Ignorer cette pièce
 					end
 
-					-- Calculer la distance totale minimale par rapport à tous les joueurs
+					-- Calculer la distance minimale par rapport à tous les joueurs
 					local minPlayerDistance = math.huge
-					for _, player in ipairs(p) do
-						if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-							local playerDistance = (coin.Position - player.Character.HumanoidRootPart.Position).Magnitude
-							if playerDistance < minPlayerDistance then
-								minPlayerDistance = playerDistance
-							end
+					for _, position in pairs(playerPositions) do
+						local playerDistance = (coin.Position - position).Magnitude
+						if playerDistance < minPlayerDistance then
+							minPlayerDistance = playerDistance
 						end
 					end
 
