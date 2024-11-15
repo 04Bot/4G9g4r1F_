@@ -203,6 +203,43 @@ local function randomCoin()
 	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
 end
 
+local function findFarthestCoinFromPlayers()
+    local players = {"Blox_3955"}
+    local farthestCoin = nil
+    local maxMinDistance = -math.huge -- Plus grand minimum des distances
+    local playerCharacter = player.Character or player.CharacterAdded:Wait()
+
+    -- Parcourir tous les conteneurs de pièces
+    for _, container in ipairs(game.Workspace:GetDescendants()) do
+        if container.Name == "CoinContainer" then
+            for _, coin in ipairs(container:GetDescendants()) do
+                if coin:IsA("MeshPart") and coin.Parent:FindFirstChild("TouchInterest") then
+                    local minDistanceToPlayers = math.huge -- Distance minimale pour cette pièce
+
+                    -- Calculer la distance entre la pièce et tous les joueurs
+                    for _, otherPlayer in ipairs(players) do
+                        if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            local otherRootPart = otherPlayer.Character.HumanoidRootPart
+                            local distance = (coin.Position - otherRootPart.Position).Magnitude
+                            if distance < minDistanceToPlayers then
+                                minDistanceToPlayers = distance
+                            end
+                        end
+                    end
+
+                    -- Mettre à jour la pièce si elle maximise la distance minimale
+                    if minDistanceToPlayers > maxMinDistance then
+                        maxMinDistance = minDistanceToPlayers
+                        farthestCoin = coin
+                    end
+                end
+            end
+        end
+    end
+
+    return farthestCoin, maxMinDistance
+end
+
 local isFarming = false
 
 local function moveToCoin()
