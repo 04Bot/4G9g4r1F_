@@ -256,7 +256,7 @@ local function moveToCoin()
 		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4"}
 
 		for _, otherPlayer in pairs(p) do
-			if otherPlayer ~= player then  -- Ignorer le joueur lui-même
+			if otherPlayer ~= player.Name then  -- Ignorer le joueur lui-même
 				local distance = getDistanceBetweenPlayers(player, otherPlayer)
 				if distance <= 10 and distance < closestPlayerDistance then
 					closestPlayerDistance = distance
