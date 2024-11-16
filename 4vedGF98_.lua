@@ -495,9 +495,6 @@ local function onCharacterAdded(newCharacter)
 		startAutoFarm()
 		reset()
 	end
-	if active_AntiAutoFarm then
-		antiAuto()
-	end
 	if active_BeADebris then
 		debris()
 	end
