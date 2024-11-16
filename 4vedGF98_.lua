@@ -102,7 +102,7 @@ local function createGui(text)
 	textLabel.RichText = true
 	textLabel.Text = "<b>" .. tostring(text) .. "</b>"
 	textLabel.BackgroundTransparency = 1
-	textLabel.TextSize = 15
+	textLabel.TextSize = 12
 	textLabel.Size = UDim2.new(0, 113, 0, 34)
 	textLabel.TextColor3 = Color3.new(1, 1, 1)
 	textLabel.Font = Enum.Font.SourceSans
@@ -112,9 +112,8 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
-local antiAutoFarm = createGui("Anti Auto Farm")
+local antiAutoFarm = createGui("Anti Auto Farm (Works)")
 local getRandomCoin = createGui("Random Coin")
-local farthestCoinFromPlayers = createGui("Farthest Coin From Players")
 local beADebris = createGui("Be A Debris")
 
 
@@ -122,7 +121,6 @@ local active_AutoFarm = false
 local active_AntiAutoFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
-local active_FarthestCoinFromPlayers = false
 
 
 local player = game.Players.LocalPlayer
@@ -249,7 +247,7 @@ local function moveToCoin()
 
 	if active_RandomCoin then
 		coin, distance = randomCoin()
-	elseif active_FarthestCoinFromPlayers then
+	elseif active_AntiAutoFarm then
 		-- Vérifier si un autre joueur est proche de nous (distance <= 100)
 		local closestPlayerDistance = math.huge
 		local closestPlayer = nil
@@ -407,38 +405,6 @@ autoFarm.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Fonction de vérification avec délai de 5 secondes
-local function checkText(initialText)
-	wait(5)
-
-	-- Vérifie si le texte n'a pas changé et n'est ni "0" ni "40"
-	if coinText.Text == initialText and coinText.Text ~= "0" and coinText.Text ~= "40" then
-		print("Le texte n'a pas changé après " .. tostring(5) .. " secondes, déplacement vers une autre pièce.")
-		if active_RandomCoin then
-			moveToCoin()
-		else
-			active_RandomCoin = true
-			moveToCoin()
-			active_RandomCoin = false
-		end
-	end
-end
-
-local function antiAuto()
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins
-	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.CurrencyFrame.Icon.Coins
-	end
-
-	coinText:GetPropertyChangedSignal("Text"):Connect(function()
-		-- Si le texte change et n'est ni "0" ni "40", relance la vérification
-		if coinText.Text ~= "0" and coinText.Text ~= "40" then
-			coroutine.wrap(function() checkText(coinText.Text) end)()
-		end
-	end)
-end
-
 antiAutoFarm.MouseButton1Click:Connect(function()
 	local outerFrame = antiAutoFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
@@ -502,25 +468,6 @@ beADebris.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		debris()
-	end
-end)
-
-farthestCoinFromPlayers.MouseButton1Click:Connect(function()
-	local outerFrame = farthestCoinFromPlayers
-	local innerFrame = outerFrame:FindFirstChild("Frame")
-
-	if active_FarthestCoinFromPlayers then
-		active_FarthestCoinFromPlayers = false
-		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
-		outerFrame.BackgroundTransparency = 1
-		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
-		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
-	else
-		active_FarthestCoinFromPlayers = true
-		-- Si désactivé, l'activer et commencer la chasse aux pièces
-		outerFrame.BackgroundTransparency = 0
-		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 	end
 end)
 
