@@ -112,7 +112,7 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
-local antiReset = createGui("Auto Reset")
+local autoReset = createGui("Auto Reset")
 local antiAutoFarm = createGui("Anti Auto Farm (Works)")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
