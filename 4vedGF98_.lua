@@ -112,12 +112,14 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
+local antiReset = createGui("Auto Reset")
 local antiAutoFarm = createGui("Anti Auto Farm (Works)")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
 
 
 local active_AutoFarm = false
+local active_AutoReset = true
 local active_AntiAutoFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
@@ -341,7 +343,7 @@ local function reset()
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
-		if coinText.Visible == true and active_AutoFarm == true then
+		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
 		end
 	end)
@@ -402,6 +404,25 @@ autoFarm.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		startAutoFarm()
+	end
+end)
+
+autoReset.MouseButton1Click:Connect(function()
+	local outerFrame = autoReset
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AutoReset then
+		active_AutoReset = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_AutoReset = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 	end
 end)
 
