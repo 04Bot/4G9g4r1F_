@@ -426,26 +426,6 @@ autoReset.MouseButton1Click:Connect(function()
 	end
 end)
 
-antiAutoFarm.MouseButton1Click:Connect(function()
-	local outerFrame = antiAutoFarm
-	local innerFrame = outerFrame:FindFirstChild("Frame")
-
-	if active_AntiAutoFarm then
-		active_AntiAutoFarm = false
-		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
-		outerFrame.BackgroundTransparency = 1
-		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
-		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
-	else
-		active_AntiAutoFarm = true
-		-- Si désactivé, l'activer et commencer la chasse aux pièces
-		outerFrame.BackgroundTransparency = 0
-		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
-		antiAuto()
-	end
-end)
-
 getRandomCoin.MouseButton1Click:Connect(function()
 	local outerFrame = getRandomCoin
 	local innerFrame = outerFrame:FindFirstChild("Frame")
