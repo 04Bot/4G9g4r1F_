@@ -229,7 +229,7 @@ end
 
 local function getDistanceBetweenPlayers(player1, player2)
 	local char1 = player1.Character
-	local char2 = game.Workspace:FindFirstChild(player2)
+	local char2 = player2.Character --game.Workspace:FindFirstChild(player2)
 
 	if char1 and char2 then
 		local pos1 = char1:WaitForChild("HumanoidRootPart").Position
@@ -256,8 +256,8 @@ local function moveToCoin()
 		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4"}
 
 		for _, otherPlayer in pairs(p) do
-			if otherPlayer ~= player.Name then  -- Ignorer le joueur lui-même
-				local distance = getDistanceBetweenPlayers(player, otherPlayer)
+			if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
+				local distance = getDistanceBetweenPlayers(player, game.Players:FindFirstChild(otherPlayer))
 				if distance <= 10 and distance < closestPlayerDistance then
 					closestPlayerDistance = distance
 					closestPlayer = otherPlayer
