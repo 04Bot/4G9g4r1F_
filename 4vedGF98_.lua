@@ -134,7 +134,6 @@ local rootTween
 local bodyPosition
 local coinText
 local beDebris
-local autoFarmDebug = true
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -355,31 +354,10 @@ local function reset()
 	end)
 end
 
-local function debugAuto()
-	local bag
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		bag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
-	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		bag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
-	end
-
-	bag:GetPropertyChangedSignal("Visible"):Connect(function()
-		if bag.Visible == true then
-			print("AutoFarm Debug : ON")
-			moveToCoin()
-			autoFarmDebug = true
-		else
-			print("AutoFarm Debug : OFF")
-			autoFarmDebug = false
-		end
-	end)
-end
-
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
 	active_AutoFarm = true
 	reset()
-	debugAuto()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
 		wait()
