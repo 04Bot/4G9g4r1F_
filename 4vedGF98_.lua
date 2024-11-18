@@ -119,7 +119,7 @@ local beADebris = createGui("Be A Debris")
 
 
 local active_AutoFarm = false
-local active_AutoReset = true
+local active_AutoReset = false
 local active_AntiAutoFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
@@ -134,6 +134,7 @@ local rootTween
 local bodyPosition
 local coinText
 local beDebris
+local autoFarmDebug = true
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -247,7 +248,7 @@ end
 local isFarming = false
 
 local function moveToCoin()
-	if not active_AutoFarm or isFarming then return end
+	if not active_AutoFarm or isFarming or autoFarmDebug then return end
 
 	isFarming = true  -- Définir le drapeau pour empêcher la réexécution
 	local coin, distance
@@ -316,7 +317,7 @@ local function moveToCoin()
 
 			local duration = distance / speed
 			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
+			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
 
 			rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
 			rootTween:Play()
@@ -358,6 +359,7 @@ end
 local function startAutoFarm()
 	active_AutoFarm = true
 	reset()
+	debugAuto()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
 		wait()
@@ -381,6 +383,24 @@ local function stopAutoFarm()
 			part.CanCollide = true -- Active/désactive la collision
 		end
 	end
+end
+
+local function debugAuto()
+	local bag
+	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
+		bag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
+	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
+		bag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
+	end
+
+	bag:GetPropertyChangedSignal("Visible"):Connect(function()
+		if bag.Visible == true then
+			moveToCoin()
+			autoFarmDebug = true
+		else
+			autoFarmDebug = false
+		end
+	end)
 end
 
 local function debris()
