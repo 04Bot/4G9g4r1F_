@@ -229,14 +229,19 @@ end
 
 local function getDistanceBetweenPlayers(player1, player2)
 	local char1 = player1.Character
-	local char2 = player2.Character --game.Workspace:FindFirstChild(player2)
+	local char2 = player2.Character
 
 	if char1 and char2 then
-		local pos1 = char1:WaitForChild("HumanoidRootPart").Position
-		local pos2 = char2:WaitForChild("HumanoidRootPart").Position
-		return (pos1 - pos2).Magnitude
+		local hrp1 = char1:FindFirstChild("HumanoidRootPart")
+		local hrp2 = char2:FindFirstChild("HumanoidRootPart")
+
+		if hrp1 and hrp2 then
+			return (hrp1.Position - hrp2.Position).Magnitude
+		end
 	end
-	return math.huge -- Si les personnages n'existent pas, renvoie une valeur très grande
+	
+	-- Si un des personnages ou HumanoidRootParts est inexistant, renvoyer une valeur très grande
+	return math.huge
 end
 
 local isFarming = false
