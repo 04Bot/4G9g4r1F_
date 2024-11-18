@@ -248,7 +248,7 @@ end
 local isFarming = false
 
 local function moveToCoin()
-	if not active_AutoFarm or isFarming or autoFarmDebug then return end
+	if not active_AutoFarm or isFarming and autoFarmDebug then return end
 
 	isFarming = true  -- Définir le drapeau pour empêcher la réexécution
 	local coin, distance
@@ -355,6 +355,24 @@ local function reset()
 	end)
 end
 
+local function debugAuto()
+	local bag
+	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
+		bag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
+	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
+		bag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
+	end
+
+	bag:GetPropertyChangedSignal("Visible"):Connect(function()
+		if bag.Visible == true then
+			moveToCoin()
+			autoFarmDebug = true
+		else
+			autoFarmDebug = false
+		end
+	end)
+end
+
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
 	active_AutoFarm = true
@@ -383,24 +401,6 @@ local function stopAutoFarm()
 			part.CanCollide = true -- Active/désactive la collision
 		end
 	end
-end
-
-local function debugAuto()
-	local bag
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		bag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
-	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		bag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
-	end
-
-	bag:GetPropertyChangedSignal("Visible"):Connect(function()
-		if bag.Visible == true then
-			moveToCoin()
-			autoFarmDebug = true
-		else
-			autoFarmDebug = false
-		end
-	end)
 end
 
 local function debris()
