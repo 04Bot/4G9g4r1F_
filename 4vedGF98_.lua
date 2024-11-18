@@ -365,9 +365,11 @@ local function debugAuto()
 
 	bag:GetPropertyChangedSignal("Visible"):Connect(function()
 		if bag.Visible == true then
+			print("AutoFarm Debug : ON")
 			moveToCoin()
 			autoFarmDebug = true
 		else
+			print("AutoFarm Debug : OFF")
 			autoFarmDebug = false
 		end
 	end)
