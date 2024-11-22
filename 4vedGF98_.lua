@@ -154,7 +154,7 @@ local function findNearestCoin()
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
 					-- Vérifie si le parent du coin contient un objet "TouchInterest"
-					if not coin.Parent:FindFirstChild("TouchInterest") and not coin.Parent:FindFirstChild("CoinVisual") then
+					if not coin.Parent:FindFirstChild("TouchInterest") or not coin.Parent:FindFirstChild("CoinVisual") then
 						-- Si pas de "TouchInterest", passer au prochain coin
 						continue
 					end
