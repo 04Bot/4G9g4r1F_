@@ -205,31 +205,29 @@ local function randomCoin()
 	return randomCoin, (character.HumanoidRootPart.Position - randomCoin.Position).Magnitude
 end
 
-local function findFarthestCoinFromPlayer(targetPlayer)
-	local farthestCoin = nil
-	local farthestDistance = 0
+local function findNearestCoin()
+	local closestCoin = nil
+	local closestDistance = math.huge
 
-	-- Chercher dans tous les containers de pièces
 	for _, obj in ipairs(game.Workspace:GetDescendants()) do
 		if obj.Name == "CoinContainer" then
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
-					-- Vérifier si le coin a un "TouchInterest"
-					if not coin.Parent:FindFirstChild("TouchInterest") then
-						continue
-					end
-
-					local distance = (coin.Position - game.Workspace:FindFirstChild(targetPlayer):FindFirstChild("HumanoidRootPart").Position).Magnitude
-					if distance > farthestDistance then
-						farthestDistance = distance
-						farthestCoin = coin
+					local parent = coin.Parent
+					if parent:FindFirstChild("TouchInterest") and parent:FindFirstChild("CoinVisual") then
+						-- Calcule la distance jusqu'à la pièce
+						local distance = (coin.Position - rootPart.Position).Magnitude
+						if distance < closestDistance then
+							closestDistance = distance
+							closestCoin = coin
+						end
 					end
 				end
 			end
 		end
 	end
 
-	return farthestCoin, farthestDistance
+	return closestCoin, closestDistance
 end
 
 local function getDistanceBetweenPlayers(player1, player2)
