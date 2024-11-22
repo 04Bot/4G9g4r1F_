@@ -276,13 +276,12 @@ local function moveToCoin()
 		end
 		
 		if closestPlayer then
-			wait(math.random(1,4))
+			wait(math.random(2,4))
 			if rootTween then
 				rootTween:Cancel()
 			end
 			local coinTp, distanceTp = findFarthestCoinFromPlayer(closestPlayer)
 			rootPart.CFrame = CFrame.new(coinTp.Position.X, coinTp.Position.Y, coinTp.Position.Z)
-			wait(1)
 			moveToCoin()
 		else
 			coin, distance = findNearestCoin()
