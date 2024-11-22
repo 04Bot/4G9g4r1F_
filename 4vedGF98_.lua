@@ -154,12 +154,14 @@ local function findNearestCoin()
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
 					wait(0.1)
-					if coin.Parent:FindFirstChild("TouchInterest") and coin then
-						-- Calcule la distance jusqu'à la pièce
-						local distance = (coin.Position - rootPart.Position).Magnitude
-						if distance < closestDistance then
-							closestDistance = distance
-							closestCoin = coin
+					if coin then
+						if coin.Parent:FindFirstChild("TouchInterest") then
+							-- Calcule la distance jusqu'à la pièce
+							local distance = (coin.Position - rootPart.Position).Magnitude
+							if distance < closestDistance then
+								closestDistance = distance
+								closestCoin = coin
+							end
 						end
 					end
 				end
