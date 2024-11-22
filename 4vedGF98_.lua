@@ -216,7 +216,7 @@ local function findFarthestCoinFromPlayer(targetPlayer)
 					if distance > farthestDistance then
 						farthestDistance = distance
 						farthestCoin = coin
-					local parent = coin.Parent
+                    end
 				end
 			end
 		end
