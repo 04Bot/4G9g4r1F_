@@ -154,7 +154,7 @@ local function findNearestCoin()
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
 					-- Vérifie si le parent du coin contient un objet "TouchInterest"
-					if not coin.Parent:FindFirstChild("TouchInterest") then
+					if not coin.Parent:FindFirstChild("TouchInterest") and not coin.Parent:FindFirstChild("CoinVisual") then
 						-- Si pas de "TouchInterest", passer au prochain coin
 						continue
 					end
@@ -180,7 +180,7 @@ local function randomCoin()
 		if container.Name == "CoinContainer" then
 			for _, coin in ipairs(container:GetDescendants()) do
 				if coin:IsA("MeshPart") then
-					if not coin.Parent:FindFirstChild("TouchInterest") then
+					if not coin.Parent:FindFirstChild("TouchInterest") and not coin.Parent:FindFirstChild("CoinVisual") then
 						-- Si pas de "TouchInterest", passer au prochain coin
 						continue
 					end
@@ -210,7 +210,7 @@ local function findFarthestCoinFromPlayer(targetPlayer)
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
 					-- Vérifier si le coin a un "TouchInterest"
-					if not coin.Parent:FindFirstChild("TouchInterest") then
+					if not coin.Parent:FindFirstChild("TouchInterest") and not coin.Parent:FindFirstChild("CoinVisual") then
 						continue
 					end
 
