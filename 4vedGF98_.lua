@@ -154,6 +154,7 @@ local function findNearestCoin()
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("MeshPart") then
 					local parent = coin.Parent
+					wait(0.5)
 					if parent:FindFirstChild("TouchInterest") and parent:FindFirstChild("CoinVisual") then
 						-- Calcule la distance jusqu'à la pièce
 						local distance = (coin.Position - rootPart.Position).Magnitude
