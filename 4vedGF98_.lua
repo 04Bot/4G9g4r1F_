@@ -276,7 +276,7 @@ local function moveToCoin()
 		end
 		
 		if closestPlayer then
-			wait(math.random(2,4))
+			wait(math.random(2,6))
 			if rootTween then
 				rootTween:Cancel()
 			end
