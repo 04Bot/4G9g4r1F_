@@ -258,7 +258,7 @@ local function moveToCoin()
 		-- Vérifier si un autre joueur est proche de nous (distance <= 100)
 		local closestPlayerDistance = math.huge
 		local closestPlayer = nil
-		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4"}
+		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568"}
 
 		for _, otherPlayer in pairs(p) do
 			if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
