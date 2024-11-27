@@ -241,17 +241,21 @@ local function getDistanceBetweenPlayers(player1, player2)
 	return math.huge
 end
 
+local isFarming = false
+
 local function moveToCoin()
-	if not active_AutoFarm then return end
+	if not active_AutoFarm or isFarming then return end
 	if not farm then
 		wait(1)
 		if bodyPosition then
 			bodyPosition:Destroy()
 		end
+		isFarming = false
 		print("Full.")
 		moveToCoin()
 	end
 
+	isFarming = true
 	local coin, distance
 
 	if active_RandomCoin then
@@ -279,6 +283,8 @@ local function moveToCoin()
 			end
 			local coinTp, distanceTp = findFarthestCoinFromPlayer(closestPlayer)
 			rootPart.CFrame = CFrame.new(coinTp.Position.X, coinTp.Position.Y, coinTp.Position.Z)
+			wait(0.5)
+			isFarming = false
 			moveToCoin()
 		else
 			coin, distance = findNearestCoin()
@@ -294,6 +300,7 @@ local function moveToCoin()
 			if not coin:IsDescendantOf(workspace) then
 				coinRemovedConnection:Disconnect()
 				wait(0.1)
+				isFarming = false
 				moveToCoin()  -- Relancer la recherche de pièce
 			end
 		end)
@@ -301,6 +308,7 @@ local function moveToCoin()
 		if distance <= 1 then
 			coinRemovedConnection:Disconnect()
 			wait(0.1)
+			isFarming = false
 			moveToCoin()
 		elseif distance > 300 then
 			if rootTween then
@@ -308,6 +316,7 @@ local function moveToCoin()
 			end
 			rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
 			coinRemovedConnection:Disconnect()
+			isFarming = false
 			moveToCoin()
 		else
 			if not bodyPosition then
@@ -328,6 +337,7 @@ local function moveToCoin()
 			rootTween.Completed:Connect(function()
 				coinRemovedConnection:Disconnect()
 				wait(0.1)
+				isFarming = false
 				moveToCoin()
 			end)
 		end
@@ -337,6 +347,7 @@ local function moveToCoin()
 			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
+		isFarming = false
 		moveToCoin()
 	end
 end
