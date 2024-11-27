@@ -133,7 +133,6 @@ local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
 local beDebris
-local farm = true
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -245,15 +244,6 @@ local isFarming = false
 
 local function moveToCoin()
 	if not active_AutoFarm or isFarming then return end
-	if not farm then
-		wait(1)
-		if bodyPosition then
-			bodyPosition:Destroy()
-		end
-		isFarming = false
-		print("Full.")
-		moveToCoin()
-	end
 
 	isFarming = true
 	local coin, distance
@@ -361,26 +351,8 @@ local function reset()
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
-		if coinText.Visible == true then
-			farm = false
-		end
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
-		end
-	end)
-end
-
-local function debugAuto()
-	local coinBag
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		coinBag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
-	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		coinBag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
-	end
-
-	coinBag:GetPropertyChangedSignal("Visible"):Connect(function()
-		if coinBag.Visible == true and active_AutoFarm == true then
-			farm = true
 		end
 	end)
 end
@@ -389,7 +361,6 @@ end
 local function startAutoFarm()
 	active_AutoFarm = true
 	reset()
-	debugAuto()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
 		wait()
