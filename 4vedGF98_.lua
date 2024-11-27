@@ -132,8 +132,8 @@ local humanoid = character:WaitForChild("Humanoid")
 local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
-local coinText
 local beDebris
+local farm = true
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -241,12 +241,17 @@ local function getDistanceBetweenPlayers(player1, player2)
 	return math.huge
 end
 
-local isFarming = false
-
 local function moveToCoin()
-	if not active_AutoFarm or isFarming and autoFarmDebug then return end
+	if not active_AutoFarm then return end
+	if not farm then
+		wait(1)
+		if bodyPosition then
+			bodyPosition:Destroy()
+		end
+		print("Full.")
+		moveToCoin()
+	end
 
-	isFarming = true  -- Définir le drapeau pour empêcher la réexécution
 	local coin, distance
 
 	if active_RandomCoin then
@@ -289,7 +294,6 @@ local function moveToCoin()
 			if not coin:IsDescendantOf(workspace) then
 				coinRemovedConnection:Disconnect()
 				wait(0.1)
-				isFarming = false  -- Réinitialiser le drapeau
 				moveToCoin()  -- Relancer la recherche de pièce
 			end
 		end)
@@ -297,7 +301,6 @@ local function moveToCoin()
 		if distance <= 1 then
 			coinRemovedConnection:Disconnect()
 			wait(0.1)
-			isFarming = false
 			moveToCoin()
 		elseif distance > 300 then
 			if rootTween then
@@ -305,7 +308,6 @@ local function moveToCoin()
 			end
 			rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
 			coinRemovedConnection:Disconnect()
-			isFarming = false
 			moveToCoin()
 		else
 			if not bodyPosition then
@@ -326,7 +328,6 @@ local function moveToCoin()
 			rootTween.Completed:Connect(function()
 				coinRemovedConnection:Disconnect()
 				wait(0.1)
-				isFarming = false
 				moveToCoin()
 			end)
 		end
@@ -336,7 +337,6 @@ local function moveToCoin()
 			bodyPosition:Destroy()
 		end
 		print("Aucune pièce trouvée.")
-		isFarming = false
 		moveToCoin()
 	end
 end
@@ -350,8 +350,26 @@ local function reset()
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
+		if coinText.Visible == true then
+			farm = false
+		end
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
+		end
+	end)
+end
+
+local function debugAuto()
+	local coinBag
+	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
+		coinBag = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.EmptyBagIcon
+	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
+		coinBag = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.EmptyBagIcon
+	end
+
+	coinBag:GetPropertyChangedSignal("Visible"):Connect(function()
+		if coinBag.Visible == true and active_AutoFarm == true then
+			farm = true
 		end
 	end)
 end
@@ -360,6 +378,7 @@ end
 local function startAutoFarm()
 	active_AutoFarm = true
 	reset()
+	debugAuto()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
 		wait()
