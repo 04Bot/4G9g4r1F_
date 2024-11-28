@@ -286,9 +286,9 @@ local function moveToCoin()
 				altFarming = false
 				altClosest = nil
 				coin, distance = findFarthestCoinFromPlayer(altClosest)
+			else
+				coin, distance = findNearestCoin()
 			end
-		else
-			coin, distance = findNearestCoin()
 		end
 	else
 		coin, distance = findNearestCoin()
