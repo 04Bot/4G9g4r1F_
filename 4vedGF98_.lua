@@ -133,7 +133,7 @@ local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
 local beDebris
-local altFarm = false
+local altFarming = false
 local isFarming = false
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
@@ -271,7 +271,7 @@ local function moveToCoin()
 				if rootTween then
 					rootTween:Cancel()
 				end
-				altFarm = true
+				altFarming = true
 				coin, distance = randomCoin()
 			else
 				coin, distance = findNearestCoin()
@@ -280,7 +280,7 @@ local function moveToCoin()
 			if rootTween then
 					rootTween:Cancel()
 			end
-			altFarm = false
+			altFarming = false
 			coin, distance = findFarthestCoinFromPlayer(closestPlayer)
 		end
 	else
