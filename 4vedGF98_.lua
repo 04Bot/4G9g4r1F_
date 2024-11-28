@@ -102,7 +102,7 @@ local function createGui(text)
 	textLabel.RichText = true
 	textLabel.Text = "<b>" .. tostring(text) .. "</b>"
 	textLabel.BackgroundTransparency = 1
-	textLabel.TextSize = 12
+	textLabel.TextSize = 14
 	textLabel.Size = UDim2.new(0, 113, 0, 34)
 	textLabel.TextColor3 = Color3.new(1, 1, 1)
 	textLabel.Font = Enum.Font.SourceSans
@@ -113,14 +113,14 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local autoReset = createGui("Auto Reset")
-local antiAutoFarm = createGui("Anti Auto Farm (Works)")
+local altFarm = createGui("Alt Farm")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
 
 
 local active_AutoFarm = false
 local active_AutoReset = false
-local active_AntiAutoFarm = false
+local active_AltFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
 
@@ -133,6 +133,8 @@ local TweenService = game:GetService("TweenService")
 local rootTween
 local bodyPosition
 local beDebris
+local altFarm = false
+local isFarming = false
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -240,8 +242,6 @@ local function getDistanceBetweenPlayers(player1, player2)
 	return math.huge
 end
 
-local isFarming = false
-
 local function moveToCoin()
 	if not active_AutoFarm or isFarming then return end
 
@@ -250,11 +250,11 @@ local function moveToCoin()
 
 	if active_RandomCoin then
 		coin, distance = randomCoin()
-	elseif active_AntiAutoFarm then
+	elseif active_AltFarm then
 		-- Vérifier si un autre joueur est proche de nous (distance <= 100)
 		local closestPlayerDistance = math.huge
 		local closestPlayer = nil
-		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568"}
+		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568", "pppcww"}
 
 		for _, otherPlayer in pairs(p) do
 			if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
@@ -265,19 +265,23 @@ local function moveToCoin()
 				end
 			end
 		end
-		
-		if closestPlayer then
-			wait(math.random(2,6))
-			if rootTween then
-				rootTween:Cancel()
+
+		if not altFarm then
+			if closestPlayer then
+				if rootTween then
+					rootTween:Cancel()
+				end
+				altFarm = true
+				coin, distance = randomCoin()
+			else
+				coin, distance = findNearestCoin()
 			end
-			local coinTp, distanceTp = findFarthestCoinFromPlayer(closestPlayer)
-			rootPart.CFrame = CFrame.new(coinTp.Position.X, coinTp.Position.Y, coinTp.Position.Z)
-			wait(0.5)
-			isFarming = false
-			moveToCoin()
 		else
-			coin, distance = findNearestCoin()
+			if rootTween then
+					rootTween:Cancel()
+			end
+			altFarm = false
+			coin, distance = findFarthestCoinFromPlayer(closestPlayer)
 		end
 	else
 		coin, distance = findNearestCoin()
@@ -434,18 +438,18 @@ autoReset.MouseButton1Click:Connect(function()
 	end
 end)
 
-antiAutoFarm.MouseButton1Click:Connect(function()
+altFarm.MouseButton1Click:Connect(function()
 	local outerFrame = antiAutoFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
-	if active_AntiAutoFarm then
-		active_AntiAutoFarm = false
+	if active_AltFarm then
+		active_AltFarm = false
 		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
 		outerFrame.BackgroundTransparency = 1
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 	else
-		active_AntiAutoFarm = true
+		active_AltFarm = true
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
