@@ -135,6 +135,7 @@ local bodyPosition
 local beDebris
 local altFarming = false
 local isFarming = false
+local altClosest
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
@@ -273,6 +274,7 @@ local function moveToCoin()
 				end
 				altFarming = true
 				coin, distance = randomCoin()
+				altClosest = closestPlayer
 			else
 				coin, distance = findNearestCoin()
 			end
@@ -281,7 +283,8 @@ local function moveToCoin()
 					rootTween:Cancel()
 			end
 			altFarming = false
-			coin, distance = findFarthestCoinFromPlayer(closestPlayer)
+			altClosest = nil
+			coin, distance = findFarthestCoinFromPlayer(altClosest)
 		end
 	else
 		coin, distance = findNearestCoin()
