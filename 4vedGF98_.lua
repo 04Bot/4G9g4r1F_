@@ -267,7 +267,7 @@ local function moveToCoin()
 			end
 		end
 
-		if not altFarm then
+		if not altFarming then
 			if closestPlayer then
 				if rootTween then
 					rootTween:Cancel()
@@ -278,13 +278,17 @@ local function moveToCoin()
 			else
 				coin, distance = findNearestCoin()
 			end
-		else
-			if rootTween then
-					rootTween:Cancel()
+		elseif altFarming then
+			if altClosest then
+				if rootTween then
+						rootTween:Cancel()
+				end
+				altFarming = false
+				altClosest = nil
+				coin, distance = findFarthestCoinFromPlayer(altClosest)
 			end
-			altFarming = false
-			altClosest = nil
-			coin, distance = findFarthestCoinFromPlayer(altClosest)
+		else
+			coin, distance = findNearestCoin()
 		end
 	else
 		coin, distance = findNearestCoin()
