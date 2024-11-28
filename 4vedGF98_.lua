@@ -439,7 +439,7 @@ autoReset.MouseButton1Click:Connect(function()
 end)
 
 altFarm.MouseButton1Click:Connect(function()
-	local outerFrame = antiAutoFarm
+	local outerFrame = altFarm
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
 	if active_AltFarm then
