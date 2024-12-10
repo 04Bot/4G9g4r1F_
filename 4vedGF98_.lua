@@ -52,7 +52,7 @@ titleBackgroundCorner.Parent = titleBackground
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0, 342, 0, 19)
 titleText.RichText = true
-titleText.Text = "<b>Teamers Hub</b>"
+titleText.Text = "<b>Teamers Hub (Works)</b>"
 titleText.TextSize = 20
 titleText.TextColor3 = Color3.new(1, 1, 1)
 titleText.BackgroundTransparency = 1
@@ -154,7 +154,7 @@ local function findNearestCoin()
 	for _, obj in ipairs(game.Workspace:GetDescendants()) do
 		if obj.Name == "CoinContainer" then
 			for _, coin in ipairs(obj:GetDescendants()) do
-				if coin:IsA("MeshPart") then
+				if coin:IsA("BasePart") then
 					if coin.Parent:FindFirstChild("TouchInterest") and coin then
 						-- Calcule la distance jusqu'à la pièce
 						local distance = (coin.Position - rootPart.Position).Magnitude
@@ -356,9 +356,9 @@ end
 local function reset()
 	local coinText
 	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Candy.Full
+		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Coin.Full
 	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Candy.Full
+		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Coin.Full
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
