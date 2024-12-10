@@ -347,7 +347,7 @@ local function moveToCoin()
 		if bodyPosition then
 			bodyPosition:Destroy()
 		end
-		print("Aucune pièce trouvée.")
+		--print("Aucune pièce trouvée.")
 		isFarming = false
 		moveToCoin()
 	end
