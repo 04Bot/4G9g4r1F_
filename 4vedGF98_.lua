@@ -28,12 +28,19 @@ local mainBackgroundCorner = Instance.new("UICorner")
 mainBackgroundCorner.CornerRadius = UDim.new(0, 16)
 mainBackgroundCorner.Parent = mainBackground
 
-local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.BackgroundTransparency = 1
-scrollFrame.Position = UDim2.new(0.067, 0, 0.121, 0)
-scrollFrame.Size = UDim2.new(0, 296, 0, 182)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-scrollFrame.Parent = mainBackground
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, -10)
+scrollingFrame.Position = UDim2.new(0, 0, 0, 5)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- Dynamically adjusted
+scrollingFrame.ScrollBarThickness = 8
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.Parent = mainBackground
+
+--// Add a UIListLayout for automatic button arrangement
+local uiListLayout = Instance.new("UIListLayout")
+uiListLayout.Padding = UDim.new(0, 5) -- Spacing between buttons
+uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+uiListLayout.Parent = scrollingFrame
 
 local scrollFrameList = Instance.new("UIListLayout")
 scrollFrameList.Padding = UDim.new(0, 4) 
@@ -136,6 +143,13 @@ local beDebris
 local altFarming = false
 local isFarming = false
 local altClosest
+
+local function updateCanvasSize()
+    local totalHeight = uiListLayout.AbsoluteContentSize.Y
+    scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
+
+uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
 
 -- Fonction pour créer et jouer un tween pour déplacer le Frame interne
 local function moveFrame(innerFrame, targetPosition)
