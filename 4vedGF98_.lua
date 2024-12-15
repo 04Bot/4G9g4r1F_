@@ -42,10 +42,6 @@ uiListLayout.Padding = UDim.new(0, 5) -- Spacing between buttons
 uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 uiListLayout.Parent = scrollingFrame
 
-local scrollFrameList = Instance.new("UIListLayout")
-scrollFrameList.Padding = UDim.new(0, 4) 
-scrollFrameList.Parent = scrollFrame
-
 local titleBackground = Instance.new("Frame")
 titleBackground.Position = UDim2.new(0.475, 0, 0.156, 0)
 titleBackground.Size = UDim2.new(0, 342, 0, 19)
