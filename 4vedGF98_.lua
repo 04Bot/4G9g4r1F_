@@ -116,6 +116,9 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local autoReset = createGui("Auto Reset")
+local autoHideAll = createGui("Auto Hide (All)")
+local autoHideMurderer = createGui("Auto Hide (Murderer)")
+local autoHideSheriff = createGui("Auto Hide (Sheriff)")
 local autoHide = createGui("Auto Hide")
 local altFarm = createGui("Alt Farm")
 local getRandomCoin = createGui("Random Coin")
@@ -124,7 +127,9 @@ local beADebris = createGui("Be A Debris")
 
 local active_AutoFarm = false
 local active_AutoReset = false
-local active_AutoHide = false
+local active_AutoHideAll = false
+local active_AutoHideMurderer = false
+local active_AutoHideSheriff = false
 local active_AltFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
@@ -167,7 +172,7 @@ local function findNearestCoin()
 		if obj.Name == "CoinContainer" then
 			for _, coin in ipairs(obj:GetDescendants()) do
 				if coin:IsA("BasePart") then
-					if coin.Parent:FindFirstChild("TouchInterest") and coin then
+					if coin.Transparency == 0 then
 						-- Calcule la distance jusqu'à la pièce
 						local distance = (coin.Position - rootPart.Position).Magnitude
 						if distance < closestDistance then
@@ -382,9 +387,16 @@ local function reset()
 	local role = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("RoleSelect")
 
 	role.OnClientEvent:Connect(function(message)
-		if active_AutoHide == true and message ~= "Murderer" then
-			player.Character.Humanoid.Health = 0
-		end
+		if active_AutoHideAll == true then
+            player.Character.Humanoid.Health = 0
+        else
+            -- Vérifie les conditions spécifiques pour Sheriff ou Murderer
+            if active_AutoHideSheriff == true and message == "Sheriff" then
+                player.Character.Humanoid.Health = 0
+            elseif active_AutoHideMurderer == true and message == "Murderer" then
+                player.Character.Humanoid.Health = 0
+            end
+        end
 	end)
 end
 
@@ -465,18 +477,56 @@ autoReset.MouseButton1Click:Connect(function()
 	end
 end)
 
-autoHide.MouseButton1Click:Connect(function()
-	local outerFrame = autoHide
+autoHideAll.MouseButton1Click:Connect(function()
+	local outerFrame = autoHideAll
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
-	if active_AutoHide then
-		active_AutoHide = false
+	if active_AutoHideAll then
+		active_AutoHideAll = false
 		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
 		outerFrame.BackgroundTransparency = 1
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 	else
-		active_AutoHide = true
+		active_AutoHideAll = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+	end
+end)
+
+autoHideMurderer.MouseButton1Click:Connect(function()
+	local outerFrame = autoHideMurderer
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AutoHideMurderer then
+		active_AutoHideMurderer = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_AutoHideMurderer = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+	end
+end)
+
+autoHideSheriff.MouseButton1Click:Connect(function()
+	local outerFrame = autoHideSheriff
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AutoHideSheriff then
+		active_AutoHideSheriff = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_AutoHideSheriff = true
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
