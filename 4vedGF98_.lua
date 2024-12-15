@@ -388,9 +388,14 @@ local function reset()
 
 	role.OnClientEvent:Connect(function(message)
 		if active_AutoHideAll == true then
+            -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
+            if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
+                return -- On quitte la fonction sans réinitialiser
+            end
+            -- Sinon, on réinitialise
             player.Character.Humanoid.Health = 0
         else
-            -- Vérifie les conditions spécifiques pour Sheriff ou Murderer
+            -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
             if active_AutoHideSheriff == true and message == "Sheriff" then
                 player.Character.Humanoid.Health = 0
             elseif active_AutoHideMurderer == true and message == "Murderer" then
