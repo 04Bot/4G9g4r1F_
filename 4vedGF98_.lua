@@ -67,7 +67,7 @@ local function createGui(text)
 	background.BackgroundTransparency = 0.7
 	background.BackgroundColor3 = Color3.new(0, 0, 0)
 	background.Size = UDim2.new(0, 296, 0, 34)
-	background.Parent = scrollFrame
+	background.Parent = scrollingFrame
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
@@ -116,6 +116,7 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local autoReset = createGui("Auto Reset")
+local autoHide = createGui("Auto Hide")
 local altFarm = createGui("Alt Farm")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
@@ -123,6 +124,7 @@ local beADebris = createGui("Be A Debris")
 
 local active_AutoFarm = false
 local active_AutoReset = false
+local active_AutoHide = false
 local active_AltFarm = false
 local active_RandomCoin = false
 local active_BeADebris = false
@@ -376,6 +378,14 @@ local function reset()
 			player.Character.Humanoid.Health = 0
 		end
 	end)
+
+	local role = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("RoleSelect")
+
+	role.OnClientEvent:Connect(function(message)
+		if active_AutoHide == true and message ~= "Murderer" then
+			player.Character.Humanoid.Health = 0
+		end
+	end)
 end
 
 -- Fonction pour démarrer l'auto-farm
@@ -448,6 +458,25 @@ autoReset.MouseButton1Click:Connect(function()
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 	else
 		active_AutoReset = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+	end
+end)
+
+autoHide.MouseButton1Click:Connect(function()
+	local outerFrame = autoHide
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AutoHide then
+		active_AutoHide = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+	else
+		active_AutoHide = true
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
