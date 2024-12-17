@@ -146,6 +146,7 @@ local beDebris
 local altFarming = false
 local isFarming = false
 local altClosest
+local farm = true
 
 local function updateCanvasSize()
     local totalHeight = uiListLayout.AbsoluteContentSize.Y
@@ -261,7 +262,7 @@ local function getDistanceBetweenPlayers(player1, player2)
 end
 
 local function moveToCoin()
-	if not active_AutoFarm or isFarming then return end
+	if not active_AutoFarm or isFarming or not farm then return end
 
 	isFarming = true
 	local coin, distance
@@ -379,6 +380,7 @@ local function reset()
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
+		farm = false
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
 		end
@@ -387,21 +389,22 @@ local function reset()
 	local role = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("RoleSelect")
 
 	role.OnClientEvent:Connect(function(message)
+		farm = true
 		if active_AutoHideAll == true then
-            -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
-            if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
-                return -- On quitte la fonction sans réinitialiser
-            end
-            -- Sinon, on réinitialise
-            player.Character.Humanoid.Health = 0
-        else
-            -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
-            if active_AutoHideSheriff == true and message == "Sheriff" then
-                player.Character.Humanoid.Health = 0
-            elseif active_AutoHideMurderer == true and message == "Murderer" then
-                player.Character.Humanoid.Health = 0
-            end
-        end
+	            -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
+	            if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
+	                return -- On quitte la fonction sans réinitialiser
+	            end
+	            -- Sinon, on réinitialise
+	            player.Character.Humanoid.Health = 0
+	        else
+	            -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
+	            if active_AutoHideSheriff == true and message == "Sheriff" then
+	                player.Character.Humanoid.Health = 0
+	            elseif active_AutoHideMurderer == true and message == "Murderer" then
+	                player.Character.Humanoid.Health = 0
+	            end
+	        end
 	end)
 end
 
