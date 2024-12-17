@@ -55,7 +55,7 @@ titleBackgroundCorner.Parent = titleBackground
 local titleText = Instance.new("TextLabel")
 titleText.Size = UDim2.new(0, 342, 0, 19)
 titleText.RichText = true
-titleText.Text = "<b>Teamers Hub (Works)</b>"
+titleText.Text = "<b>Teamers Hub</b>"
 titleText.TextSize = 20
 titleText.TextColor3 = Color3.new(1, 1, 1)
 titleText.BackgroundTransparency = 1
@@ -116,7 +116,7 @@ end
 
 local autoFarm = createGui("Auto Farm")
 local autoReset = createGui("Auto Reset")
-local autoHideAll = createGui("Auto Hide (All)")
+local autoHideAll = createGui("Auto Hide")
 local autoHideMurderer = createGui("Auto Hide (Murderer)")
 local autoHideSheriff = createGui("Auto Hide (Sheriff)")
 local autoHide = createGui("Auto Hide")
@@ -262,112 +262,114 @@ local function getDistanceBetweenPlayers(player1, player2)
 end
 
 local function moveToCoin()
-	if not active_AutoFarm or isFarming or not farm then return end
+	if not active_AutoFarm or isFarming then return end
 
-	isFarming = true
-	local coin, distance
+	if farm then
+		isFarming = true
+		local coin, distance
 
-	if active_RandomCoin then
-		coin, distance = randomCoin()
-	elseif active_AltFarm then
-		-- Vérifier si un autre joueur est proche de nous (distance <= 100)
-		local closestPlayerDistance = math.huge
-		local closestPlayer = nil
-		local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568", "pppcww", "p4ppc", "iiirpp", "pppcll", "iiihpp"}
+		if active_RandomCoin then
+			coin, distance = randomCoin()
+		elseif active_AltFarm then
+			-- Vérifier si un autre joueur est proche de nous (distance <= 100)
+			local closestPlayerDistance = math.huge
+			local closestPlayer = nil
+			local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568", "pppcww", "p4ppc", "iiirpp", "pppcll", "iiihpp"}
 
-		for _, otherPlayer in pairs(p) do
-			if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
-				local distance = getDistanceBetweenPlayers(player, game.Players:FindFirstChild(otherPlayer))
-				if distance <= 10 and distance < closestPlayerDistance then
-					closestPlayerDistance = distance
-					closestPlayer = otherPlayer
+			for _, otherPlayer in pairs(p) do
+				if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
+					local distance = getDistanceBetweenPlayers(player, game.Players:FindFirstChild(otherPlayer))
+					if distance <= 10 and distance < closestPlayerDistance then
+						closestPlayerDistance = distance
+						closestPlayer = otherPlayer
+					end
 				end
 			end
+
+			--if not altFarming then
+				if closestPlayer then
+					if rootTween then
+						rootTween:Cancel()
+					end
+					altFarming = true
+					coin, distance = randomCoin()
+					altClosest = closestPlayer
+				else
+					coin, distance = findNearestCoin()
+				end
+			--[[elseif altFarming then
+				if altClosest then
+					if rootTween then
+						rootTween:Cancel()
+					end
+					altFarming = false
+					altClosest = nil
+					coin, distance = findFarthestCoinFromPlayer(altClosest)
+				else
+					coin, distance = findNearestCoin()
+				end
+			end]]--
+		else
+			coin, distance = findNearestCoin()
 		end
 
-		--if not altFarming then
-			if closestPlayer then
-				if rootTween then
-					rootTween:Cancel()
+		if coin then
+
+			local coinRemovedConnection
+			coinRemovedConnection = coin.AncestryChanged:Connect(function()
+				if not coin:IsDescendantOf(workspace) then
+					coinRemovedConnection:Disconnect()
+					wait(0.1)
+					isFarming = false
+					moveToCoin()  -- Relancer la recherche de pièce
 				end
-				altFarming = true
-				coin, distance = randomCoin()
-				altClosest = closestPlayer
-			else
-				coin, distance = findNearestCoin()
-			end
-		--[[elseif altFarming then
-			if altClosest then
-				if rootTween then
-					rootTween:Cancel()
-				end
-				altFarming = false
-				altClosest = nil
-				coin, distance = findFarthestCoinFromPlayer(altClosest)
-			else
-				coin, distance = findNearestCoin()
-			end
-		end]]--
-	else
-		coin, distance = findNearestCoin()
-	end
+			end)
 
-	if coin then
-
-		local coinRemovedConnection
-		coinRemovedConnection = coin.AncestryChanged:Connect(function()
-			if not coin:IsDescendantOf(workspace) then
-				coinRemovedConnection:Disconnect()
-				wait(0.1)
-				isFarming = false
-				moveToCoin()  -- Relancer la recherche de pièce
-			end
-		end)
-
-		if distance <= 1 then
-			coinRemovedConnection:Disconnect()
-			wait(0.1)
-			isFarming = false
-			moveToCoin()
-		elseif distance > 300 then
-			if rootTween then
-				rootTween:Cancel()
-			end
-			rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
-			coinRemovedConnection:Disconnect()
-			isFarming = false
-			moveToCoin()
-		else
-			if not bodyPosition then
-				bodyPosition = Instance.new("BodyPosition")
-				bodyPosition.P = 0
-				bodyPosition.D = 0
-				bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-				bodyPosition.Parent = character.HumanoidRootPart
-			end
-
-			local duration = distance / speed
-			local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-			local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
-
-			rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
-			rootTween:Play()
-
-			rootTween.Completed:Connect(function()
+			if distance <= 1 then
 				coinRemovedConnection:Disconnect()
 				wait(0.1)
 				isFarming = false
 				moveToCoin()
-			end)
+			elseif distance > 300 then
+				if rootTween then
+					rootTween:Cancel()
+				end
+				rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
+				coinRemovedConnection:Disconnect()
+				isFarming = false
+				moveToCoin()
+			else
+				if not bodyPosition then
+					bodyPosition = Instance.new("BodyPosition")
+					bodyPosition.P = 0
+					bodyPosition.D = 0
+					bodyPosition.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+					bodyPosition.Parent = character.HumanoidRootPart
+				end
+
+				local duration = distance / speed
+				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y, coin.Position.Z)
+
+				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+				rootTween:Play()
+
+				rootTween.Completed:Connect(function()
+					coinRemovedConnection:Disconnect()
+					wait(0.1)
+					isFarming = false
+					moveToCoin()
+				end)
+			end
+		else
+			wait(1)
+			if bodyPosition then
+				bodyPosition:Destroy()
+			end
+			--print("Aucune pièce trouvée.")
+			isFarming = false
+			moveToCoin()
 		end
-	else
-		wait(1)
-		if bodyPosition then
-			bodyPosition:Destroy()
-		end
-		--print("Aucune pièce trouvée.")
-		isFarming = false
-		moveToCoin()
 	end
 end
 
