@@ -375,6 +375,7 @@ local function moveToCoin()
 		moveToCoin()
 	end
 end
+local gameStarted = true
 
 local function reset()
 	local coinText
@@ -391,31 +392,34 @@ local function reset()
 		end
 	end)
 
-	local role = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("RoleSelect")
-
-	role.OnClientEvent:Connect(function(message)
-		farm = true
-		if active_AutoHideAll == true then
-	        -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
-	        if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
-	            return -- On quitte la fonction sans réinitialiser
-	        end
-	        -- Sinon, on réinitialise
-	        player.Character.Humanoid.Health = 0
-	    else
-	         -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
-	        if active_AutoHideSheriff == true and message == "Sheriff" then
-	            player.Character.Humanoid.Health = 0
-	        elseif active_AutoHideMurderer == true and message == "Murderer" then
-	            player.Character.Humanoid.Health = 0
-	        end
-	    end
-	end)
+	if gameStarted then
+		local role = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Gameplay"):WaitForChild("RoleSelect")
+		role.OnClientEvent:Connect(function(message)
+			farm = true
+			if active_AutoHideAll == true then
+			    -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
+			    if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
+			        return -- On quitte la fonction sans réinitialiser
+			    end
+			    -- Sinon, on réinitialise
+				player.Character.Humanoid.Health = 0
+			else
+			        -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
+			    if active_AutoHideSheriff == true and message == "Sheriff" then
+			        player.Character.Humanoid.Health = 0
+			    elseif active_AutoHideMurderer == true and message == "Murderer" then
+			        player.Character.Humanoid.Health = 0
+			    end
+			end
+		end)
+		gameStarted = false
+	end
 end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
 	active_AutoFarm = true
+	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
 		wait()
@@ -641,4 +645,3 @@ end
 
 -- Initialisation
 player.CharacterAdded:Connect(onCharacterAdded)
-reset()
