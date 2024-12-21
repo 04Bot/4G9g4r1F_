@@ -380,9 +380,9 @@ local gameStarted = true
 local function reset()
 	local coinText
 	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Coin.Full
+		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.SnowToken.Full
 	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Coin.Full
+		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.SnowToken.Full
 	end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
