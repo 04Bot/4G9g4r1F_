@@ -1144,6 +1144,11 @@ local function onCharacterAdded(newCharacter)
 	if active_BeADebris then
 		debris()
 	end
+	if active_AutoFarmEclipse then
+		stopAutoFarmEclipse()
+		wait(2)
+		startAutoFarmEclipse()
+	end
     espHero()
 end
 
