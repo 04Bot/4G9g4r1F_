@@ -455,7 +455,7 @@ local function cleanupFallPrevention()
 end
 
 local function moveToCoinEclipse()
-	if not active_AutoFarmEclipse or isFarming or not character.HumanoidRootPart then return end
+	if not active_AutoFarmEclipse or isFarming or not character:FindFirstChild("HumanoidRootPart") then return end
 
 	if farm then
 		isFarming = true
