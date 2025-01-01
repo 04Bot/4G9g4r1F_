@@ -116,6 +116,7 @@ local function createGui(text)
 end
 
 local autoFarm = createGui("Auto Farm")
+local autoFarmEclipse = createGui("Auto Farm Eclipse")
 local autoReset = createGui("Auto Reset")
 local esp = createGui("ESP")
 local autoHideAll = createGui("Auto Hide")
@@ -127,6 +128,7 @@ local beADebris = createGui("Be A Debris")
 
 
 local active_AutoFarm = false
+local active_AutoFarmEclipse = false
 local active_AutoReset = false
 local active_Esp = false
 local active_AutoHideAll = false
@@ -180,8 +182,7 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[+] ESP</b>
-<b>[/] Auto Farm Modifié</b>
+<b>[+] Auto Farm Eclipse</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -227,6 +228,8 @@ local altFarming = false
 local isFarming = false
 local altClosest
 local farm = true
+local fallprevention = false
+local fallprevention1
 
 local function updateCanvasSize()
     local totalHeight = uiListLayout.AbsoluteContentSize.Y
@@ -405,31 +408,31 @@ local function moveToCoin()
 				end
 			end)
             if distance > 300 then
-				if rootTween then
-					rootTween:Cancel()
-				end
-				rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 1.5, coin.Position.Z)
-				coinRemovedConnection:Disconnect()
-				isFarming = false
-				moveToCoin()
-			else
+                if rootTween then
+                    rootTween:Cancel()
+                end
+                rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 1.5, coin.Position.Z)
+                coinRemovedConnection:Disconnect()
+                isFarming = false
+                moveToCoin()
+            else
                 workspace.Gravity = 0
 
-				local duration = distance / speed
-				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
+                local duration = distance / speed
+                local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
 
-				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
-				rootTween:Play()
+                rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+                rootTween:Play()
 
-				rootTween.Completed:Connect(function()
-					coinRemovedConnection:Disconnect()
+                rootTween.Completed:Connect(function()
+                    coinRemovedConnection:Disconnect()
                     workspace.Gravity = 196.2
                     wait(0.1)
-					isFarming = false
-					moveToCoin()
-				end)
-			end
+                    isFarming = false
+                    moveToCoin()
+                end)
+            end
 		else
 			wait(1)
 			isFarming = false
@@ -438,6 +441,149 @@ local function moveToCoin()
 	else
 		wait(1)
 		moveToCoin()
+	end
+end
+
+-- À la fin du farming, nettoyez fallprevention
+local function cleanupFallPrevention()
+    if fallprevention1 then
+        fallprevention1:Destroy()
+        fallprevention1 = nil
+    end
+    fallprevention = false
+    humanoid.PlatformStand = false
+end
+
+local function moveToCoinEclipse()
+	if not active_AutoFarmEclipse or isFarming or not character.HumanoidRootPart then return end
+
+	if farm then
+		isFarming = true
+		local coin, distance
+
+		if active_RandomCoin then
+			coin, distance = randomCoin()
+		elseif active_AltFarm then
+			-- Vérifier si un autre joueur est proche de nous (distance <= 100)
+			local closestPlayerDistance = math.huge
+			local closestPlayer = nil
+			local p = {"Blox_3955", "Vellrox_YT", "Jr_myR4", "qMinette", "Blox_1568", "pppcww", "p4ppc", "iiirpp", "pppcll", "iiihpp"}
+
+			for _, otherPlayer in pairs(p) do
+				if otherPlayer ~= player.Name and game.Players:FindFirstChild(otherPlayer) then  -- Ignorer le joueur lui-même
+					local distance = getDistanceBetweenPlayers(player, game.Players:FindFirstChild(otherPlayer))
+					if distance <= 10 and distance < closestPlayerDistance then
+						closestPlayerDistance = distance
+						closestPlayer = otherPlayer
+					end
+				end
+			end
+
+			--if not altFarming then
+				if closestPlayer then
+					if rootTween then
+						rootTween:Cancel()
+					end
+					altFarming = true
+					coin, distance = randomCoin()
+					altClosest = closestPlayer
+				else
+					coin, distance = findNearestCoin()
+				end
+			--[[elseif altFarming then
+				if altClosest then
+					if rootTween then
+						rootTween:Cancel()
+					end
+					altFarming = false
+					altClosest = nil
+					coin, distance = findFarthestCoinFromPlayer(altClosest)
+				else
+					coin, distance = findNearestCoin()
+				end
+			end]]--
+		else
+			coin, distance = findNearestCoin()
+		end
+
+		if coin then
+
+			local coinRemovedConnection
+			coinRemovedConnection = coin.AncestryChanged:Connect(function()
+				if not coin:IsDescendantOf(workspace) then
+					coinRemovedConnection:Disconnect()
+					wait(0.1)
+					isFarming = false
+					moveToCoinEclipse()  -- Relancer la recherche de pièce
+				end
+			end)
+
+            if not fallprevention then
+                fallprevention = true
+                fallprevention1 = Instance.new("BodyPosition")
+                fallprevention1.P = 0
+                fallprevention1.D = 0
+                fallprevention1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                fallprevention1.Parent = character.HumanoidRootPart
+
+                humanoid.PlatformStand = true
+            end
+
+			if distance <= 4 then
+                -- Téléporter la pièce sur le joueur
+                coin.CFrame = character.HumanoidRootPart.CFrame
+
+                -- Déconnecter le suivi et finir le farming
+                coinRemovedConnection:Disconnect()
+                wait(0.1)
+                cleanupFallPrevention()  -- Nettoyer le système anti-chute
+                isFarming = false
+                moveToCoinEclipse()
+            elseif distance > 300 then
+                if rootTween then
+                    rootTween:Cancel()
+                end
+
+                -- Calculer la position juste sous la pièce
+                local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y + 2, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
+                local targetRotation = CFrame.Angles(math.rad(90), 0, 0)
+                local finalCFrame = targetPosition * targetRotation
+
+                character.Humanoid.UseJumpPower = false
+                character.Humanoid.PlatformStand = true
+                rootPart.CFrame = finalCFrame
+                coinRemovedConnection:Disconnect()
+                cleanupFallPrevention()  -- Nettoyer après avoir atteint la pièce
+                isFarming = false
+                moveToCoinEclipse()
+            else
+                -- Déplacer normalement vers la pièce
+                workspace.Gravity = 0
+                local duration = distance / speed
+                local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 3, coin.Position.Z) * CFrame.Angles(math.rad(90), 0, 0)
+
+                rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+                rootTween:Play()
+
+                rootTween.Completed:Connect(function()
+                    coinRemovedConnection:Disconnect()
+                    wait(0.1)
+                    cleanupFallPrevention()  -- Nettoyer après avoir terminé le tween
+                    isFarming = false
+                    moveToCoinEclipse()
+                end)
+            end
+		else
+			wait(1)
+            workspace.Gravity = 196.2
+			isFarming = false
+			moveToCoinEclipse()
+		end
+	else
+		wait(1)
+        workspace.Gravity = 196.2
+		moveToCoinEclipse()
 	end
 end
 local gameStarted = true
@@ -452,6 +598,16 @@ local function reset()
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
+        if active_AutoFarmEclipse then
+            for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
+                if i:IsA("BasePart") and i.Name == "Spawn" then
+                    local player = game.Players.LocalPlayer
+                    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        player.Character.HumanoidRootPart.CFrame = i.CFrame
+                    end
+                end
+            end
+        end
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
 		end
@@ -483,7 +639,6 @@ end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
-	active_AutoFarm = true
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
@@ -498,16 +653,41 @@ end
 
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
-	active_AutoFarm = false
-	rootTween:Cancel()
-	if bodyPosition then
-		bodyPosition:Destroy()
-	end
+    if rootTween then
+        rootTween:Cancel()
+    end
 	for _, part in ipairs(character:GetDescendants()) do
 		if part:IsA("BasePart") or part:IsA("MeshPart") then
 			part.CanCollide = true -- Active/désactive la collision
 		end
 	end
+end
+
+-- Fonction pour démarrer l'auto-farm
+local function startAutoFarmEclipse()
+	reset()
+	moveToCoinEclipse()  -- Lancer la chasse à la première pièce
+	while active_AutoFarmEclipse do
+		wait()
+		for _, part in ipairs(character:GetDescendants()) do
+			if part:IsA("BasePart") or part:IsA("MeshPart") then
+				part.CanCollide = false  -- Active/désactive la collision
+			end
+		end
+	end
+end
+
+-- Fonction pour arrêter l'auto-farm
+local function stopAutoFarmEclipse()
+    if rootTween then
+        rootTween:Cancel()
+    end
+	for _, part in ipairs(character:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("MeshPart") then
+			part.CanCollide = true -- Active/désactive la collision
+		end
+	end
+    cleanupFallPrevention()
 end
 
 local function debris()
@@ -673,16 +853,18 @@ local function applyHeroEffect()
 end
 
 -- Écoute l'ajout d'un GunDrop dans le Workspace
-Workspace.DescendantAdded:Connect(function(descendant)
-    if descendant.Name == "GunDrop" then
-        descendant.AncestryChanged:Connect(function(_, parent)
-            if parent == nil then
-                -- Quand le GunDrop est enlevé du Workspace
-                applyHeroEffect() -- Appliquer l'effet Hero aux joueurs possédant un gun
-            end
-        end)
-    end
-end)
+local function espHero()
+    Workspace.DescendantAdded:Connect(function(descendant)
+        if descendant.Name == "GunDrop" then
+            descendant.AncestryChanged:Connect(function(_, parent)
+                if parent == nil then
+                    -- Quand le GunDrop est enlevé du Workspace
+                    applyHeroEffect() -- Appliquer l'effet Hero aux joueurs possédant un gun
+                end
+            end)
+        end
+    end)
+end
 
 -- Écoute l'événement RoundStart
 local espEvent = ReplicatedStorage.Remotes.Gameplay.Fade
@@ -721,12 +903,46 @@ autoFarm.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 		stopAutoFarm()
+        active_AutoFarm = false
 	else
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		startAutoFarm()
+        active_AutoFarm = true
+	end
+end)
+
+autoFarmEclipse.MouseButton1Click:Connect(function()
+	local outerFrame = autoFarmEclipse
+	local innerFrame = outerFrame:FindFirstChild("Frame")
+
+	if active_AutoFarmEclipse then
+        active_AutoFarmEclipse = false
+        workspace.Gravity = 196.2
+        for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
+            if i:IsA("BasePart") and i.Name == "Spawn" then
+                local player = game.Players.LocalPlayer
+                if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    player.Character.HumanoidRootPart.CFrame = i.CFrame
+                end
+            end
+        end
+        character.Humanoid.UseJumpPower = true
+        character.Humanoid.PlatformStand = false
+		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
+		outerFrame.BackgroundTransparency = 1
+		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
+		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
+		stopAutoFarmEclipse()
+	else
+        active_AutoFarmEclipse = true
+		-- Si désactivé, l'activer et commencer la chasse aux pièces
+		outerFrame.BackgroundTransparency = 0
+		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
+		startAutoFarmEclipse()
 	end
 end)
 
@@ -918,6 +1134,8 @@ local function onCharacterAdded(newCharacter)
 	rootPart = character:WaitForChild("HumanoidRootPart")
 	humanoid = character:WaitForChild("Humanoid")
 
+    wait(4)
+
 	if active_AutoFarm then
 		stopAutoFarm()
 		wait(2)
@@ -926,6 +1144,7 @@ local function onCharacterAdded(newCharacter)
 	if active_BeADebris then
 		debris()
 	end
+    espHero()
 end
 
 -- Initialisation
