@@ -532,8 +532,9 @@ local function moveToCoinEclipse()
 				humanoid.PlatformStand = true
 			end
 
-			
-			print(distance)
+			if distance then
+				print(distance)
+			end
 			if distance <= 4 then
 				-- Téléporter la pièce sur le joueur
 				coin.CFrame = character.HumanoidRootPart.CFrame
