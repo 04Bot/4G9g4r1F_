@@ -125,7 +125,6 @@ local autoHideSheriff = createGui("Auto Hide (Sheriff)")
 local altFarm = createGui("Alt Farm")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
-local textCoin = createGui("textCoin")
 
 
 local active_AutoFarm = false
@@ -186,6 +185,7 @@ logText.Text = [[
 <b>[/] Fix Auto Farm Eclipse (Faisait lag)</b>
 <b>[/] Fix Auto Reset avec Eclipse</b>
 <b>[/] Fix Auto Farm (Faisait lag)</b>
+<b>[BUG] Auto Farm Eclipse ne marche pas sur mobile.</b>
 <b></b>
 <b>V 0.0.1</b>
 ]]  -- Ajoute ici tes logs de changement
@@ -534,8 +534,7 @@ local function moveToCoinEclipse()
 				humanoid.PlatformStand = true
 			end
 			
-			if distance <= 5 then
-				textCoin.Text = tostring(distance)
+			if distance <= 4 then
 				-- Téléporter la pièce sur le joueur
 				coin.CFrame = character.HumanoidRootPart.CFrame
 
@@ -546,7 +545,6 @@ local function moveToCoinEclipse()
 				isFarming = false
 				moveToCoinEclipse()
 			elseif distance > 300 then
-				textCoin.Text = tostring(distance)
 				if rootTween then
 					rootTween:Cancel()
 				end
