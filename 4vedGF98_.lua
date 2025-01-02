@@ -184,6 +184,8 @@ logText.RichText = true
 logText.Text = [[
 <b>[/] Fix Auto Farm Eclipse (Faisait lag)</b>
 <b>[/] Fix Auto Reset avec Eclipse</b>
+<b></b>
+<b>V 0.0.1</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -530,10 +532,11 @@ local function moveToCoinEclipse()
 				humanoid.PlatformStand = true
 			end
 
+			
+			print(distance)
 			if distance <= 4 then
 				-- Téléporter la pièce sur le joueur
-				--coin.CFrame = character.HumanoidRootPart.CFrame
-				coin.Position = character.HumanoidRootPart.Position
+				coin.CFrame = character.HumanoidRootPart.CFrame
 
 				-- Déconnecter le suivi et finir le farming
 				coinRemovedConnection:Disconnect()
