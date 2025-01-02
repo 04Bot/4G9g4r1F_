@@ -184,6 +184,7 @@ logText.RichText = true
 logText.Text = [[
 <b>[/] Fix Auto Farm Eclipse (Faisait lag)</b>
 <b>[/] Fix Auto Reset avec Eclipse</b>
+<b>[/] Fix Auto Farm (Faisait lag)</b>
 <b></b>
 <b>V 0.0.1</b>
 ]]  -- Ajoute ici tes logs de changement
@@ -645,6 +646,7 @@ end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
+	active_AutoFarm = true
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while active_AutoFarm do
@@ -659,6 +661,7 @@ end
 
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
+	active_AutoFarm = false
 	if rootTween then
 		rootTween:Cancel()
 	end
@@ -922,14 +925,12 @@ autoFarm.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 		stopAutoFarm()
-		active_AutoFarm = false
 	else
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		startAutoFarm()
-		active_AutoFarm = true
 	end
 end)
 
