@@ -182,7 +182,8 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[+] Auto Farm Eclipse</b>
+<b>[/] Fix Auto Farm Eclipse (Faisait lag)</b>
+<b>[/] Fix Auto Reset avec Eclipse</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -211,8 +212,8 @@ okButtonCorner.Parent = okButton
 
 -- Fonction pour fermer le GUI quand le bouton OK est cliqué
 okButton.MouseButton1Click:Connect(function()
-    screenLog:Destroy()  -- Cacher l'UI
-    screen.Enabled = true
+	screenLog:Destroy()  -- Cacher l'UI
+	screen.Enabled = true
 end)
 
 
@@ -232,8 +233,8 @@ local fallprevention = false
 local fallprevention1
 
 local function updateCanvasSize()
-    local totalHeight = uiListLayout.AbsoluteContentSize.Y
-    scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+	local totalHeight = uiListLayout.AbsoluteContentSize.Y
+	scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 end
 
 uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
@@ -313,12 +314,12 @@ local function findFarthestCoinFromPlayer(targetPlayer)
 					if not coin.Parent:FindFirstChild("TouchInterest") then
 						continue
 					end
-						
+
 					local distance = (coin.Position - game.Workspace:FindFirstChild(targetPlayer):FindFirstChild("HumanoidRootPart").Position).Magnitude
 					if distance > farthestDistance then
 						farthestDistance = distance
 						farthestCoin = coin
-                    end
+					end
 				end
 			end
 		end
@@ -339,7 +340,7 @@ local function getDistanceBetweenPlayers(player1, player2)
 			return (hrp1.Position - hrp2.Position).Magnitude
 		end
 	end
-	
+
 	-- Si un des personnages ou HumanoidRootParts est inexistant, renvoyer une valeur très grande
 	return math.huge
 end
@@ -370,16 +371,16 @@ local function moveToCoin()
 			end
 
 			--if not altFarming then
-				if closestPlayer then
-					if rootTween then
-						rootTween:Cancel()
-					end
-					altFarming = true
-					coin, distance = randomCoin()
-					altClosest = closestPlayer
-				else
-					coin, distance = findNearestCoin()
+			if closestPlayer then
+				if rootTween then
+					rootTween:Cancel()
 				end
+				altFarming = true
+				coin, distance = randomCoin()
+				altClosest = closestPlayer
+			else
+				coin, distance = findNearestCoin()
+			end
 			--[[elseif altFarming then
 				if altClosest then
 					if rootTween then
@@ -407,32 +408,32 @@ local function moveToCoin()
 					moveToCoin()  -- Relancer la recherche de pièce
 				end
 			end)
-            if distance > 300 then
-                if rootTween then
-                    rootTween:Cancel()
-                end
-                rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 1.5, coin.Position.Z)
-                coinRemovedConnection:Disconnect()
-                isFarming = false
-                moveToCoin()
-            else
-                workspace.Gravity = 0
+			if distance > 300 then
+				if rootTween then
+					rootTween:Cancel()
+				end
+				rootPart.CFrame = CFrame.new(coin.Position.X, coin.Position.Y + 1.5, coin.Position.Z)
+				coinRemovedConnection:Disconnect()
+				isFarming = false
+				moveToCoin()
+			else
+				workspace.Gravity = 0
 
-                local duration = distance / speed
-                local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
+				local duration = distance / speed
+				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y + 0.5, coin.Position.Z)
 
-                rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
-                rootTween:Play()
+				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+				rootTween:Play()
 
-                rootTween.Completed:Connect(function()
-                    coinRemovedConnection:Disconnect()
-                    workspace.Gravity = 196.2
-                    wait(0.1)
-                    isFarming = false
-                    moveToCoin()
-                end)
-            end
+				rootTween.Completed:Connect(function()
+					coinRemovedConnection:Disconnect()
+					workspace.Gravity = 196.2
+					wait(0.1)
+					isFarming = false
+					moveToCoin()
+				end)
+			end
 		else
 			wait(1)
 			isFarming = false
@@ -446,12 +447,12 @@ end
 
 -- À la fin du farming, nettoyez fallprevention
 local function cleanupFallPrevention()
-    if fallprevention1 then
-        fallprevention1:Destroy()
-        fallprevention1 = nil
-    end
-    fallprevention = false
-    humanoid.PlatformStand = false
+	if fallprevention1 then
+		fallprevention1:Destroy()
+		fallprevention1 = nil
+	end
+	fallprevention = false
+	humanoid.PlatformStand = false
 end
 
 local function moveToCoinEclipse()
@@ -480,16 +481,16 @@ local function moveToCoinEclipse()
 			end
 
 			--if not altFarming then
-				if closestPlayer then
-					if rootTween then
-						rootTween:Cancel()
-					end
-					altFarming = true
-					coin, distance = randomCoin()
-					altClosest = closestPlayer
-				else
-					coin, distance = findNearestCoin()
+			if closestPlayer then
+				if rootTween then
+					rootTween:Cancel()
 				end
+				altFarming = true
+				coin, distance = randomCoin()
+				altClosest = closestPlayer
+			else
+				coin, distance = findNearestCoin()
+			end
 			--[[elseif altFarming then
 				if altClosest then
 					if rootTween then
@@ -518,71 +519,72 @@ local function moveToCoinEclipse()
 				end
 			end)
 
-            if not fallprevention then
-                fallprevention = true
-                fallprevention1 = Instance.new("BodyPosition")
-                fallprevention1.P = 0
-                fallprevention1.D = 0
-                fallprevention1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                fallprevention1.Parent = character.HumanoidRootPart
+			if not fallprevention then
+				fallprevention = true
+				fallprevention1 = Instance.new("BodyPosition")
+				fallprevention1.P = 0
+				fallprevention1.D = 0
+				fallprevention1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+				fallprevention1.Parent = character.HumanoidRootPart
 
-                humanoid.PlatformStand = true
-            end
+				humanoid.PlatformStand = true
+			end
 
 			if distance <= 4 then
-                -- Téléporter la pièce sur le joueur
-                coin.CFrame = character.HumanoidRootPart.CFrame
+				-- Téléporter la pièce sur le joueur
+				--coin.CFrame = character.HumanoidRootPart.CFrame
+				coin.Position = character.HumanoidRootPart.Position
 
-                -- Déconnecter le suivi et finir le farming
-                coinRemovedConnection:Disconnect()
-                wait(0.1)
-                cleanupFallPrevention()  -- Nettoyer le système anti-chute
-                isFarming = false
-                moveToCoinEclipse()
-            elseif distance > 300 then
-                if rootTween then
-                    rootTween:Cancel()
-                end
+				-- Déconnecter le suivi et finir le farming
+				coinRemovedConnection:Disconnect()
+				wait(0.1)
+				cleanupFallPrevention()  -- Nettoyer le système anti-chute
+				isFarming = false
+				moveToCoinEclipse()
+			elseif distance > 300 then
+				if rootTween then
+					rootTween:Cancel()
+				end
 
-                -- Calculer la position juste sous la pièce
-                local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y + 2, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
-                local targetRotation = CFrame.Angles(math.rad(90), 0, 0)
-                local finalCFrame = targetPosition * targetRotation
+				-- Calculer la position juste sous la pièce
+				local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y + 2, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
+				local targetRotation = CFrame.Angles(math.rad(90), 0, 0)
+				local finalCFrame = targetPosition * targetRotation
 
-                character.Humanoid.UseJumpPower = false
-                character.Humanoid.PlatformStand = true
-                rootPart.CFrame = finalCFrame
-                coinRemovedConnection:Disconnect()
-                cleanupFallPrevention()  -- Nettoyer après avoir atteint la pièce
-                isFarming = false
-                moveToCoinEclipse()
-            else
-                -- Déplacer normalement vers la pièce
-                workspace.Gravity = 0
-                local duration = distance / speed
-                local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 3, coin.Position.Z) * CFrame.Angles(math.rad(90), 0, 0)
+				character.Humanoid.UseJumpPower = false
+				character.Humanoid.PlatformStand = true
+				rootPart.CFrame = finalCFrame
+				coinRemovedConnection:Disconnect()
+				cleanupFallPrevention()  -- Nettoyer après avoir atteint la pièce
+				isFarming = false
+				moveToCoinEclipse()
+			else
+				-- Déplacer normalement vers la pièce
+				workspace.Gravity = 0
+				local duration = distance / speed
+				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 3, coin.Position.Z) * CFrame.Angles(math.rad(90), 0, 0)
 
-                rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
-                rootTween:Play()
+				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
+				rootTween:Play()
 
-                rootTween.Completed:Connect(function()
-                    coinRemovedConnection:Disconnect()
-                    wait(0.1)
-                    cleanupFallPrevention()  -- Nettoyer après avoir terminé le tween
-                    isFarming = false
-                    moveToCoinEclipse()
-                end)
-            end
+				rootTween.Completed:Connect(function()
+					coinRemovedConnection:Disconnect()
+					wait(0.1)
+					cleanupFallPrevention()  -- Nettoyer après avoir terminé le tween
+					isFarming = false
+					moveToCoinEclipse()
+				end)
+			end
 		else
 			wait(1)
-            workspace.Gravity = 196.2
+			workspace.Gravity = 196.2
 			isFarming = false
 			moveToCoinEclipse()
 		end
 	else
 		wait(1)
-        workspace.Gravity = 196.2
+		workspace.Gravity = 196.2
 		moveToCoinEclipse()
 	end
 end
@@ -598,17 +600,20 @@ local function reset()
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
-        if active_AutoFarmEclipse then
-            for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-                if i:IsA("BasePart") and i.Name == "Spawn" then
-                    local player = game.Players.LocalPlayer
-                    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        player.Character.HumanoidRootPart.CFrame = i.CFrame
-                    end
-                end
-            end
-        end
+		if active_AutoFarmEclipse then
+			for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
+				if i:IsA("BasePart") and i.Name == "Spawn" then
+					local player = game.Players.LocalPlayer
+					if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						player.Character.HumanoidRootPart.CFrame = i.CFrame
+					end
+				end
+			end
+		end
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
+			player.Character.Humanoid.Health = 0
+		end
+		if coinText.Visible == true and active_AutoFarmEclipse == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
 		end
 	end)
@@ -618,19 +623,19 @@ local function reset()
 		role.OnClientEvent:Connect(function(message)
 			farm = true
 			if active_AutoHideAll == true then
-			    -- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
-			    if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
-			        return -- On quitte la fonction sans réinitialiser
-			    end
-			    -- Sinon, on réinitialise
+				-- Ne pas reset si le rôle est Murderer ou Sheriff et qu'ils ne sont pas activés pour le reset
+				if (message == "Sheriff" and not active_AutoHideSheriff) or (message == "Murderer" and not active_AutoHideMurderer) then
+					return -- On quitte la fonction sans réinitialiser
+				end
+				-- Sinon, on réinitialise
 				player.Character.Humanoid.Health = 0
 			else
-			        -- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
-			    if active_AutoHideSheriff == true and message == "Sheriff" then
-			        player.Character.Humanoid.Health = 0
-			    elseif active_AutoHideMurderer == true and message == "Murderer" then
-			        player.Character.Humanoid.Health = 0
-			    end
+				-- Vérifie uniquement les conditions spécifiques pour Sheriff ou Murderer
+				if active_AutoHideSheriff == true and message == "Sheriff" then
+					player.Character.Humanoid.Health = 0
+				elseif active_AutoHideMurderer == true and message == "Murderer" then
+					player.Character.Humanoid.Health = 0
+				end
 			end
 		end)
 		gameStarted = false
@@ -653,9 +658,9 @@ end
 
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
-    if rootTween then
-        rootTween:Cancel()
-    end
+	if rootTween then
+		rootTween:Cancel()
+	end
 	for _, part in ipairs(character:GetDescendants()) do
 		if part:IsA("BasePart") or part:IsA("MeshPart") then
 			part.CanCollide = true -- Active/désactive la collision
@@ -665,6 +670,7 @@ end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarmEclipse()
+	active_AutoFarmEclipse = true
 	reset()
 	moveToCoinEclipse()  -- Lancer la chasse à la première pièce
 	while active_AutoFarmEclipse do
@@ -679,15 +685,27 @@ end
 
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarmEclipse()
-    if rootTween then
-        rootTween:Cancel()
-    end
+	active_AutoFarmEclipse = false
+	workspace.Gravity = 196.2
+	for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
+		if i:IsA("BasePart") and i.Name == "Spawn" then
+			local player = game.Players.LocalPlayer
+			if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+				player.Character.HumanoidRootPart.CFrame = i.CFrame
+			end
+		end
+	end
+	character.Humanoid.UseJumpPower = true
+	character.Humanoid.PlatformStand = false
+	if rootTween then
+		rootTween:Cancel()
+	end
 	for _, part in ipairs(character:GetDescendants()) do
 		if part:IsA("BasePart") or part:IsA("MeshPart") then
 			part.CanCollide = true -- Active/désactive la collision
 		end
 	end
-    cleanupFallPrevention()
+	cleanupFallPrevention()
 end
 
 local function debris()
@@ -707,190 +725,190 @@ local roleDataTable = {} -- Table pour stocker les données des rôles, incluant
 
 -- Fonction pour ajouter un Highlight à un personnage
 local function addESPHighlight(player, role, isRespawn, isDead)
-    if not player or player == Players.LocalPlayer then 
-        return 
-    end -- Ignorer le joueur local ou invalide
+	if not player or player == Players.LocalPlayer then 
+		return 
+	end -- Ignorer le joueur local ou invalide
 
-    local character = player.Character or player.CharacterAdded:Wait() -- Attendre que le personnage soit chargé
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 10) 
-    if not humanoidRootPart then 
-        return 
-    end -- Vérifier si un ESP existe déjà et le supprimer
+	local character = player.Character or player.CharacterAdded:Wait() -- Attendre que le personnage soit chargé
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 10) 
+	if not humanoidRootPart then 
+		return 
+	end -- Vérifier si un ESP existe déjà et le supprimer
 
-    local existingHighlight = character:FindFirstChild("ESPHighlight") 
-    if existingHighlight then 
-        existingHighlight:Destroy() 
-    end 
+	local existingHighlight = character:FindFirstChild("ESPHighlight") 
+	if existingHighlight then 
+		existingHighlight:Destroy() 
+	end 
 
-    -- Créer un Highlight
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "ESPHighlight"
-    highlight.Parent = character
-    highlight.FillTransparency = 0.8 -- Rendre l'intérieur partiellement transparent (visible)
-    highlight.OutlineTransparency = 0 -- Opacité du contour
-    highlight.Enabled = true -- Si c'est un respawn, appliquer un ESP blanc
+	-- Créer un Highlight
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "ESPHighlight"
+	highlight.Parent = character
+	highlight.FillTransparency = 0.8 -- Rendre l'intérieur partiellement transparent (visible)
+	highlight.OutlineTransparency = 0 -- Opacité du contour
+	highlight.Enabled = true -- Si c'est un respawn, appliquer un ESP blanc
 
-    if isRespawn then
-        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Blanc
-        highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Blanc
-    elseif isDead then
-        -- Si le joueur est mort, appliquer un ESP gris
-        highlight.OutlineColor = Color3.fromRGB(169, 169, 169) -- Gris
-        highlight.FillColor = Color3.fromRGB(169, 169, 169) -- Gris
-    else
-        -- Définir la couleur selon le rôle
-        local roleColors = {
-            Murderer = {
-                OutlineColor = Color3.fromRGB(255, 0, 0),
-                FillColor = Color3.fromRGB(255, 0, 0)
-            },
-            Sheriff = {
-                OutlineColor = Color3.fromRGB(0, 0, 255),
-                FillColor = Color3.fromRGB(0, 0, 255)
-            },
-            Innocent = {
-                OutlineColor = Color3.fromRGB(0, 255, 0),
-                FillColor = Color3.fromRGB(0, 255, 0)
-            },
-            Hero = {
-                OutlineColor = Color3.fromRGB(255, 255, 0),
-                FillColor = Color3.fromRGB(255, 255, 0)
-            }
-        }
-        
-        local color = roleColors[role]
-        if color then
-            highlight.OutlineColor = color.OutlineColor
-            highlight.FillColor = color.FillColor
-        end
-    end
+	if isRespawn then
+		highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Blanc
+		highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Blanc
+	elseif isDead then
+		-- Si le joueur est mort, appliquer un ESP gris
+		highlight.OutlineColor = Color3.fromRGB(169, 169, 169) -- Gris
+		highlight.FillColor = Color3.fromRGB(169, 169, 169) -- Gris
+	else
+		-- Définir la couleur selon le rôle
+		local roleColors = {
+			Murderer = {
+				OutlineColor = Color3.fromRGB(255, 0, 0),
+				FillColor = Color3.fromRGB(255, 0, 0)
+			},
+			Sheriff = {
+				OutlineColor = Color3.fromRGB(0, 0, 255),
+				FillColor = Color3.fromRGB(0, 0, 255)
+			},
+			Innocent = {
+				OutlineColor = Color3.fromRGB(0, 255, 0),
+				FillColor = Color3.fromRGB(0, 255, 0)
+			},
+			Hero = {
+				OutlineColor = Color3.fromRGB(255, 255, 0),
+				FillColor = Color3.fromRGB(255, 255, 0)
+			}
+		}
+
+		local color = roleColors[role]
+		if color then
+			highlight.OutlineColor = color.OutlineColor
+			highlight.FillColor = color.FillColor
+		end
+	end
 end
 
 -- Fonction pour gérer l'activation de l'ESP
 local function handleESPActivation()
-    if esp then
-        -- Si ESP est activé, appliquer les highlights des joueurs stockés dans roleDataTable
-        for playerName, data in pairs(roleDataTable) do
-            local player = Players:FindFirstChild(playerName)
-            if player and type(data) == "table" and data.Role then
-                -- Vérifier si le joueur est mort
-                local isDead = data.IsDead or false
-                addESPHighlight(player, data.Role, false, isDead)
-            end
-        end
-    end
+	if esp then
+		-- Si ESP est activé, appliquer les highlights des joueurs stockés dans roleDataTable
+		for playerName, data in pairs(roleDataTable) do
+			local player = Players:FindFirstChild(playerName)
+			if player and type(data) == "table" and data.Role then
+				-- Vérifier si le joueur est mort
+				local isDead = data.IsDead or false
+				addESPHighlight(player, data.Role, false, isDead)
+			end
+		end
+	end
 end
 
 -- Fonction pour stocker les données des joueurs dans la table, y compris l'état de la mort
 local function storeRoleData(player, role, isDead)
-    roleDataTable[player.Name] = {Role = role, IsDead = isDead}
+	roleDataTable[player.Name] = {Role = role, IsDead = isDead}
 end
 
 -- Gérer la mort d'un joueur
 local function onPlayerDeath(player)
-    -- Lorsqu'un joueur meurt, stocker l'état comme "mort" et appliquer l'ESP gris
-    storeRoleData(player, roleDataTable[player.Name] and roleDataTable[player.Name].Role or "Unknown", true)
-    if not active_Esp then
-        -- Appliquer un ESP gris si ESP est désactivé
-        addESPHighlight(player, roleDataTable[player.Name] and roleDataTable[player.Name].Role or "Unknown", false, true)
-    end
+	-- Lorsqu'un joueur meurt, stocker l'état comme "mort" et appliquer l'ESP gris
+	storeRoleData(player, roleDataTable[player.Name] and roleDataTable[player.Name].Role or "Unknown", true)
+	if not active_Esp then
+		-- Appliquer un ESP gris si ESP est désactivé
+		addESPHighlight(player, roleDataTable[player.Name] and roleDataTable[player.Name].Role or "Unknown", false, true)
+	end
 end
 
 -- Écoute l'ajout d'un joueur et son respawn
 Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        -- Lors du respawn, appliquer un ESP blanc
-        addESPHighlight(player, nil, true, false) -- Le paramètre "nil" est passé pour le rôle, car on applique un ESP blanc
-    end)
+	player.CharacterAdded:Connect(function(character)
+		-- Lors du respawn, appliquer un ESP blanc
+		addESPHighlight(player, nil, true, false) -- Le paramètre "nil" est passé pour le rôle, car on applique un ESP blanc
+	end)
 
-    -- Écoute la mort du joueur
-    player.Character:WaitForChild("Humanoid").Died:Connect(function()
-        onPlayerDeath(player)
-    end)
+	-- Écoute la mort du joueur
+	player.Character:WaitForChild("Humanoid").Died:Connect(function()
+		onPlayerDeath(player)
+	end)
 end)
 
 -- Gérer le retrait d'un joueur
 Players.PlayerRemoving:Connect(function(player)
-    roleDataTable[player.Name] = nil
+	roleDataTable[player.Name] = nil
 end)
 
 -- Appliquer l'ESP pour les joueurs existants
 for _, player in ipairs(Players:GetPlayers()) do
-    player.CharacterAdded:Connect(function(character)
-        addESPHighlight(player, nil, true, false)
-    end)
-    player.Character:WaitForChild("Humanoid").Died:Connect(function()
-        onPlayerDeath(player)
-    end)
+	player.CharacterAdded:Connect(function(character)
+		addESPHighlight(player, nil, true, false)
+	end)
+	player.Character:WaitForChild("Humanoid").Died:Connect(function()
+		onPlayerDeath(player)
+	end)
 end
 
 -- Fonction pour vérifier si un joueur possède un Gun dans son Backpack
 local function checkForGunInBackpack(player)
-    local backpack = player:FindFirstChild("Backpack")
-    if backpack then
-        for _, item in pairs(backpack:GetChildren()) do
-            if item.Name == "Gun" then
-                return true
-            end
-        end
-    end
-    return false
+	local backpack = player:FindFirstChild("Backpack")
+	if backpack then
+		for _, item in pairs(backpack:GetChildren()) do
+			if item.Name == "Gun" then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 -- Fonction pour appliquer l'effet Hero quand le gun est pris
 local function applyHeroEffect()
-    for _, player in pairs(Players:GetPlayers()) do
-        -- Si un joueur a un gun dans son Backpack, on applique l'effet Hero
-        if checkForGunInBackpack(player) then
-            if not active_Esp then
-                storeRoleData(player, "Hero") -- Stocker l'effet Hero dans la table si esp est désactivé
-            else
-                addESPHighlight(player, "Hero")
-                storeRoleData(player, "Hero")
-            end
-        end
-    end
+	for _, player in pairs(Players:GetPlayers()) do
+		-- Si un joueur a un gun dans son Backpack, on applique l'effet Hero
+		if checkForGunInBackpack(player) then
+			if not active_Esp then
+				storeRoleData(player, "Hero") -- Stocker l'effet Hero dans la table si esp est désactivé
+			else
+				addESPHighlight(player, "Hero")
+				storeRoleData(player, "Hero")
+			end
+		end
+	end
 end
 
 -- Écoute l'ajout d'un GunDrop dans le Workspace
 local function espHero()
-    Workspace.DescendantAdded:Connect(function(descendant)
-        if descendant.Name == "GunDrop" then
-            descendant.AncestryChanged:Connect(function(_, parent)
-                if parent == nil then
-                    -- Quand le GunDrop est enlevé du Workspace
-                    applyHeroEffect() -- Appliquer l'effet Hero aux joueurs possédant un gun
-                end
-            end)
-        end
-    end)
+	Workspace.DescendantAdded:Connect(function(descendant)
+		if descendant.Name == "GunDrop" then
+			descendant.AncestryChanged:Connect(function(_, parent)
+				if parent == nil then
+					-- Quand le GunDrop est enlevé du Workspace
+					applyHeroEffect() -- Appliquer l'effet Hero aux joueurs possédant un gun
+				end
+			end)
+		end
+	end)
 end
 
 -- Écoute l'événement RoundStart
 local espEvent = ReplicatedStorage.Remotes.Gameplay.Fade
 espEvent.OnClientEvent:Connect(function(message)
-    if roleDataTable ~= nil then
-        roleDataTable = {}
-    end
+	if roleDataTable ~= nil then
+		roleDataTable = {}
+	end
 
-    if active_Esp then
-        -- Si ESP est activé, appliquer directement les highlights
-        for playerName, data in pairs(message) do
-            local player = Players:FindFirstChild(playerName)
-            if player and type(data) == "table" and data.Role then
-                addESPHighlight(player, data.Role, false, false)
-                storeRoleData(player, data.Role, false)
-            end
-        end
-    else
-        -- Sinon, stocker les données des rôles dans la table
-        for playerName, data in pairs(message) do
-            local player = Players:FindFirstChild(playerName)
-            if player and type(data) == "table" and data.Role then
-                storeRoleData(player, data.Role, false)
-            end
-        end
-    end
+	if active_Esp then
+		-- Si ESP est activé, appliquer directement les highlights
+		for playerName, data in pairs(message) do
+			local player = Players:FindFirstChild(playerName)
+			if player and type(data) == "table" and data.Role then
+				addESPHighlight(player, data.Role, false, false)
+				storeRoleData(player, data.Role, false)
+			end
+		end
+	else
+		-- Sinon, stocker les données des rôles dans la table
+		for playerName, data in pairs(message) do
+			local player = Players:FindFirstChild(playerName)
+			if player and type(data) == "table" and data.Role then
+				storeRoleData(player, data.Role, false)
+			end
+		end
+	end
 end)
 
 autoFarm.MouseButton1Click:Connect(function()
@@ -903,14 +921,14 @@ autoFarm.MouseButton1Click:Connect(function()
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 		stopAutoFarm()
-        active_AutoFarm = false
+		active_AutoFarm = false
 	else
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 		moveFrame(innerFrame, UDim2.new(0.5, 0, 0.089, 0))  -- Nouvelle position
 		startAutoFarm()
-        active_AutoFarm = true
+		active_AutoFarm = true
 	end
 end)
 
@@ -919,25 +937,12 @@ autoFarmEclipse.MouseButton1Click:Connect(function()
 	local innerFrame = outerFrame:FindFirstChild("Frame")
 
 	if active_AutoFarmEclipse then
-        active_AutoFarmEclipse = false
-        workspace.Gravity = 196.2
-        for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-            if i:IsA("BasePart") and i.Name == "Spawn" then
-                local player = game.Players.LocalPlayer
-                if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    player.Character.HumanoidRootPart.CFrame = i.CFrame
-                end
-            end
-        end
-        character.Humanoid.UseJumpPower = true
-        character.Humanoid.PlatformStand = false
 		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
 		outerFrame.BackgroundTransparency = 1
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 		stopAutoFarmEclipse()
 	else
-        active_AutoFarmEclipse = true
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -971,22 +976,22 @@ esp.MouseButton1Click:Connect(function()
 
 	if active_Esp then
 		active_Esp = false
-        for _, player in pairs(Players:GetPlayers()) do
-            local character = player.Character
-            if character then
-                local existingHighlight = character:FindFirstChild("ESPHighlight")
-                if existingHighlight then
-                    existingHighlight:Destroy()  -- Détruire l'ESP
-                end
-            end
-        end
+		for _, player in pairs(Players:GetPlayers()) do
+			local character = player.Character
+			if character then
+				local existingHighlight = character:FindFirstChild("ESPHighlight")
+				if existingHighlight then
+					existingHighlight:Destroy()  -- Détruire l'ESP
+				end
+			end
+		end
 		-- Si déjà actif, désactiver et arrêter la chasse aux pièces
 		outerFrame.BackgroundTransparency = 1
 		innerFrame.BackgroundColor3 = Color3.new(0.52549, 0.52549, 0.52549)
 		moveFrame(innerFrame, UDim2.new(0.05, 0, 0.089, 0))  -- Position initiale
 	else
 		active_Esp = true
-        handleESPActivation()
+		handleESPActivation()
 		-- Si désactivé, l'activer et commencer la chasse aux pièces
 		outerFrame.BackgroundTransparency = 0
 		innerFrame.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -1134,7 +1139,7 @@ local function onCharacterAdded(newCharacter)
 	rootPart = character:WaitForChild("HumanoidRootPart")
 	humanoid = character:WaitForChild("Humanoid")
 
-    wait(4)
+	wait(4)
 
 	if active_AutoFarm then
 		stopAutoFarm()
@@ -1149,7 +1154,7 @@ local function onCharacterAdded(newCharacter)
 		wait(2)
 		startAutoFarmEclipse()
 	end
-    espHero()
+	espHero()
 end
 
 -- Initialisation
