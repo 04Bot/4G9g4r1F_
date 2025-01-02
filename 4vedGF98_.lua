@@ -125,6 +125,7 @@ local autoHideSheriff = createGui("Auto Hide (Sheriff)")
 local altFarm = createGui("Alt Farm")
 local getRandomCoin = createGui("Random Coin")
 local beADebris = createGui("Be A Debris")
+local textCoin = createGui("textCoin")
 
 
 local active_AutoFarm = false
@@ -534,6 +535,7 @@ local function moveToCoinEclipse()
 			end
 			
 			if distance <= 5 then
+				textCoin.Text = tostring(distance)
 				-- Téléporter la pièce sur le joueur
 				coin.CFrame = character.HumanoidRootPart.CFrame
 
@@ -544,6 +546,7 @@ local function moveToCoinEclipse()
 				isFarming = false
 				moveToCoinEclipse()
 			elseif distance > 300 then
+				textCoin.Text = tostring(distance)
 				if rootTween then
 					rootTween:Cancel()
 				end
