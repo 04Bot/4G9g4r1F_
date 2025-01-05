@@ -183,6 +183,7 @@ logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
 <b>[/] Fix Auto Farm Eclipse : TP dans certaine map</b>
+<b>[/] Fix ESP : Hero ESP</b>
 <b>[BUG] Auto Farm Eclipse ne marche pas sur mobile.</b>
 <b></b>
 <b>V 0.0.2</b>
@@ -603,13 +604,14 @@ local function reset()
 		farm = false
 		if active_AutoFarmEclipse then
 			for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-				if i:IsA("BasePart") and i.Name == "Spawn" then
-					local player = game.Players.LocalPlayer
-					if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-						player.Character.HumanoidRootPart.CFrame = i.CFrame
-					end
-				end
-			end
+                if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
+                    local player = game.Players.LocalPlayer
+                    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        player.Character.HumanoidRootPart.CFrame = i.CFrame
+                        break -- Sortie après avoir téléporté le joueur à un spawn
+                    end
+                end
+            end
 		end
 		if coinText.Visible == true and active_AutoFarm == true and active_AutoReset == true then
 			player.Character.Humanoid.Health = 0
@@ -865,10 +867,11 @@ local function applyHeroEffect()
 		-- Si un joueur a un gun dans son Backpack, on applique l'effet Hero
 		if checkForGunInBackpack(player) then
 			if not active_Esp then
-				storeRoleData(player, "Hero") -- Stocker l'effet Hero dans la table si esp est désactivé
+				storeRoleData(player, "Hero", false) -- Stocker l'effet Hero dans la table si esp est désactivé
 			else
-				addESPHighlight(player, "Hero")
-				storeRoleData(player, "Hero")
+                print("yes2")
+            	addESPHighlight(player, "Hero", false, false)
+				storeRoleData(player, "Hero", false)
 			end
 		end
 	end
@@ -876,16 +879,13 @@ end
 
 -- Écoute l'ajout d'un GunDrop dans le Workspace
 local function espHero()
-	Workspace.DescendantAdded:Connect(function(descendant)
-		if descendant.Name == "GunDrop" then
-			descendant.AncestryChanged:Connect(function(_, parent)
-				if parent == nil then
-					-- Quand le GunDrop est enlevé du Workspace
-					applyHeroEffect() -- Appliquer l'effet Hero aux joueurs possédant un gun
-				end
-			end)
-		end
-	end)
+	game.Workspace.DescendantRemoving:Connect(function(descendant)
+        if descendant.Name == "GunDrop" then
+            print("yes")
+            wait(1)
+            applyHeroEffect()
+        end
+    end)
 end
 
 -- Écoute l'événement RoundStart
@@ -1156,8 +1156,9 @@ local function onCharacterAdded(newCharacter)
 		wait(2)
 		startAutoFarmEclipse()
 	end
-	espHero()
 end
+
+espHero()
 
 -- Initialisation
 player.CharacterAdded:Connect(onCharacterAdded)
