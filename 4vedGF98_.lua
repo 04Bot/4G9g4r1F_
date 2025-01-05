@@ -182,12 +182,10 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[/] Fix Auto Farm Eclipse (Faisait lag)</b>
-<b>[/] Fix Auto Reset avec Eclipse</b>
-<b>[/] Fix Auto Farm (Faisait lag)</b>
+<b>[/] Fix Auto Farm Eclipse : TP dans certaine map</b>
 <b>[BUG] Auto Farm Eclipse ne marche pas sur mobile.</b>
 <b></b>
-<b>V 0.0.1</b>
+<b>V 0.0.2</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -693,12 +691,13 @@ local function stopAutoFarmEclipse()
 	active_AutoFarmEclipse = false
 	workspace.Gravity = 196.2
 	for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-		if i:IsA("BasePart") and i.Name == "Spawn" then
-			local player = game.Players.LocalPlayer
-			if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-				player.Character.HumanoidRootPart.CFrame = i.CFrame
-			end
-		end
+	    if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
+	        local player = game.Players.LocalPlayer
+	        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+	            player.Character.HumanoidRootPart.CFrame = i.CFrame
+	            break -- Sortie après avoir téléporté le joueur à un spawn
+	        end
+	    end
 	end
 	character.Humanoid.UseJumpPower = true
 	character.Humanoid.PlatformStand = false
