@@ -301,9 +301,6 @@ local function moveToCoinEclipse()
         --end
 
 		if coin then
-
-            rootPart.CFrame = rootPart.CFrame * CFrame.Angles(math.rad(90), 0, 0
-
 			local coinRemovedConnection
 			coinRemovedConnection = coin.AncestryChanged:Connect(function()
 				if not coin:IsDescendantOf(workspace) then
