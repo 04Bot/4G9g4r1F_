@@ -163,9 +163,7 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[/] Fix Auto Farm Eclipse : TP dans certaine map</b>
-<b>[/] Fix ESP : Hero ESP</b>
-<b>[BUG] Auto Farm Eclipse ne marche pas sur mobile.</b>
+<b>[/] Fix character voiding</b>
 <b></b>
 <b>V 0.0.2</b>
 ]]  -- Ajoute ici tes logs de changement
@@ -365,12 +363,13 @@ local function moveToCoinEclipse()
 		else
 			wait(1)
 			workspace.Gravity = 196.2
-			--isFarming = false
+            cleanupFallPrevention()
 			moveToCoinEclipse()
 		end
 	else
 		wait(1)
 		workspace.Gravity = 196.2
+        cleanupFallPrevention()
 		moveToCoinEclipse()
 	end
 end
@@ -385,6 +384,7 @@ local function reset()
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
+        wait(1)
         if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
             rootPart.CFrame = game.Workspace:FindFirstChild(murder):FindFirstChild("HumanoidRootPart").CFrame
         else
