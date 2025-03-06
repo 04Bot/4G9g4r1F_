@@ -350,7 +350,7 @@ local function moveToCoinEclipse()
 				-- Déplacer normalement vers la pièce
 				workspace.Gravity = 0
 				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 1.5, coin.Position.Z))
+				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 1.5, coin.Position.Z) * CFrame.Angles(math.rad(90), 0, 0)
 
 				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
 				rootTween:Play()
