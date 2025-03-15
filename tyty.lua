@@ -319,12 +319,13 @@ local function moveToCoinEclipse()
 				cleanupFallPrevention()  -- Nettoyer le système anti-chute
 				moveToCoinEclipse()
 			elseif distance > 300 then
+                
 				if rootTween then
 					rootTween:Cancel()
 				end
 
 				-- Calculer la position juste sous la pièce
-				local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y - 1.5, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
+				local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y - 10, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
 				local targetRotation = CFrame.Angles(math.rad(90), 0, 0)
 				local finalCFrame = targetPosition * targetRotation
 
@@ -332,6 +333,7 @@ local function moveToCoinEclipse()
 				character.Humanoid.PlatformStand = true
 				rootPart.CFrame = finalCFrame
 				coinRemovedConnection:Disconnect()
+                wait(math.random(3,6))
 				cleanupFallPrevention()  -- Nettoyer après avoir atteint la pièce
 				moveToCoinEclipse()
 			else
