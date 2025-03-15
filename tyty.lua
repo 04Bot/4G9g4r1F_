@@ -163,9 +163,10 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[/] Fix character voiding</b>
+<b>[FIX] AutoFarm fall into void while tp in the Lobby</b>
+<b>[FIX] Auto farm was sometimes buged</b>
 <b></b>
-<b>V 0.0.2</b>
+<b>V 0.1.0</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -208,7 +209,6 @@ local rootTween
 local bodyPosition
 local farm = false
 local fallprevention = false
-local fallprevention1
 local murder
 
 local function updateCanvasSize()
@@ -279,10 +279,6 @@ end
 
 -- À la fin du farming, nettoyez fallprevention
 local function cleanupFallPrevention()
-	if fallprevention1 then
-		fallprevention1:Destroy()
-		fallprevention1 = nil
-	end
 	fallprevention = false
 	humanoid.PlatformStand = false
 end
@@ -310,12 +306,6 @@ local function moveToCoinEclipse()
 
 			if not fallprevention then
 				fallprevention = true
-				fallprevention1 = Instance.new("BodyPosition")
-				fallprevention1.P = 0
-				fallprevention1.D = 0
-				fallprevention1.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-				fallprevention1.Parent = character.HumanoidRootPart
-
 				humanoid.PlatformStand = true
 			end
 
@@ -384,7 +374,6 @@ local function reset()
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
-        wait(1)
         if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
             rootPart.CFrame = game.Workspace:FindFirstChild(murder):FindFirstChild("HumanoidRootPart").CFrame
         else
@@ -425,7 +414,7 @@ local function stopAutoFarmEclipse()
 	    if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
 	        local player = game.Players.LocalPlayer
 	        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-	            player.Character.HumanoidRootPart.CFrame = i.CFrame
+	            player.Character.HumanoidRootPart.CFrame = i.CFrame * CFrame.new(0, 20, 0)
 	            break -- Sortie après avoir téléporté le joueur à un spawn
 	        end
 	    end
@@ -451,7 +440,7 @@ role.OnClientEvent:Connect(function()
 	    if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
 	        local player = game.Players.LocalPlayer
 	        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-	            player.Character.HumanoidRootPart.CFrame = i.CFrame
+	            player.Character.HumanoidRootPart.CFrame = i.CFrame * CFrame.new(0, 20, 0)
 	            break -- Sortie après avoir téléporté le joueur à un spawn
 	        end
 	    end
