@@ -319,7 +319,7 @@ local function moveToCoinEclipse()
 				cleanupFallPrevention()  -- Nettoyer le système anti-chute
 				moveToCoinEclipse()
 			elseif distance > 300 then
-                
+                workspace.Gravity = 0
 				if rootTween then
 					rootTween:Cancel()
 				end
