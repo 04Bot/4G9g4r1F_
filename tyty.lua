@@ -163,10 +163,10 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[FIX] AutoFarm fall into void while tp in the Lobby</b>
-<b>[FIX] Auto farm was sometimes buged</b>
+<b>[ADDED] Move when the coin is collected by a other player</b>
+<b>[FIX] Lag when a coin despawn</b>
 <b></b>
-<b>V 0.1.0</b>
+<b>V 0.1.1</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -225,7 +225,7 @@ local function moveFrame(innerFrame, targetPosition)
 	tween:Play()  -- Joue l'animation
 end
 
-local speed = 25  -- Vitesse en unités par seconde
+local speed = 22  -- Vitesse en unités par seconde
 
 -- Fonction pour trouver la pièce la plus proche dans chaque "CoinContainer"
 local function findFarthestCoinFromPlayer(targetPlayer)
@@ -287,20 +287,28 @@ local function moveToCoinEclipse()
 	if not active_AutoFarmEclipse or not character:FindFirstChild("HumanoidRootPart") then return end
 
 	if farm then
-        local coin, distance
-        --if game.Players:FindFirstChild(murder) then
-           --coin, distance = findFarthestCoinFromPlayer(murder)
-        --else
-		    coin, distance = findNearestCoin()
-        --end
+        local coin, distance = findNearestCoin()
 
 		if coin then
-			local coinRemovedConnection
-			coinRemovedConnection = coin.AncestryChanged:Connect(function()
-				if not coin:IsDescendantOf(workspace) then
-					coinRemovedConnection:Disconnect()
+			local coinConnection
+			local tweenConnection
+
+			local function cleanConnections()
+				if coinConnection then
+					coinConnection:Disconnect()
+					coinConnection = nil
+				end
+				if tweenConnection then
+					tweenConnection:Disconnect()
+					tweenConnection = nil
+				end
+			end
+
+			coinConnection = coin:GetPropertyChangedSignal("Transparency"):Connect(function()
+				if coin.Transparency ~= 0 or not coin:IsDescendantOf(workspace) then
+					cleanConnections()
 					wait(0.1)
-					moveToCoinEclipse()  -- Relancer la recherche de pièce
+					moveToCoinEclipse()
 				end
 			end)
 
@@ -312,11 +320,10 @@ local function moveToCoinEclipse()
             local duration = distance / speed
 			
 			if distance <= 2 then
-
-				-- Déconnecter le suivi et finir le farming
-				coinRemovedConnection:Disconnect()
+                coin:Destroy()
+				cleanConnections()
 				wait(0.1)
-				cleanupFallPrevention()  -- Nettoyer le système anti-chute
+				cleanupFallPrevention()
 				moveToCoinEclipse()
 			elseif distance > 300 then
                 workspace.Gravity = 0
@@ -324,20 +331,19 @@ local function moveToCoinEclipse()
 					rootTween:Cancel()
 				end
 
-				-- Calculer la position juste sous la pièce
-				local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y - 10, coin.Position.Z)  -- Décalage de 2 studs sous la pièce
+				local targetPosition = CFrame.new(coin.Position.X, coin.Position.Y - 10, coin.Position.Z)
 				local targetRotation = CFrame.Angles(math.rad(90), 0, 0)
 				local finalCFrame = targetPosition * targetRotation
 
 				character.Humanoid.UseJumpPower = false
 				character.Humanoid.PlatformStand = true
 				rootPart.CFrame = finalCFrame
-				coinRemovedConnection:Disconnect()
+
+				cleanConnections()
                 wait(math.random(3,6))
-				cleanupFallPrevention()  -- Nettoyer après avoir atteint la pièce
+				cleanupFallPrevention()
 				moveToCoinEclipse()
 			else
-				-- Déplacer normalement vers la pièce
 				workspace.Gravity = 0
 				local rootTweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 				local rootTweenGoal = CFrame.new(coin.Position.X, coin.Position.Y - 1.5, coin.Position.Z) * CFrame.Angles(math.rad(90), 0, 0)
@@ -345,10 +351,10 @@ local function moveToCoinEclipse()
 				rootTween = TweenService:Create(rootPart, rootTweenInfo, {CFrame = rootTweenGoal})
 				rootTween:Play()
 
-				rootTween.Completed:Connect(function()
-					coinRemovedConnection:Disconnect()
+				tweenConnection = rootTween.Completed:Connect(function()
+					cleanConnections()
 					wait(0.1)
-					cleanupFallPrevention()  -- Nettoyer après avoir terminé le tween
+					cleanupFallPrevention()
 					moveToCoinEclipse()
 				end)
 			end
