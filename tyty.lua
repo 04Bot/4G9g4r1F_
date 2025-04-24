@@ -163,7 +163,7 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[ADDED] Now farming RARE EGGS</b>
+<b>[FIX] Fixed collecting rare eggs</b>
 <b></b>
 <b>V 0.1.2</b>
 ]]  -- Ajoute ici tes logs de changement
@@ -372,6 +372,7 @@ local function moveToCoinEclipse()
 end
 
 local rareEggsSpawn
+local processing = false
 
 local function reset()
 	local player = game.Players.LocalPlayer
@@ -407,23 +408,28 @@ local function reset()
 			for _, obj in ipairs(game.Workspace:GetDescendants()) do
 				if obj.Name == "CoinContainer" then
 					rareEggsSpawn = obj.ChildAdded:Connect(function(part)
-						wait()
-                        for _, p in part:GetDescendants() do
-                            if p:IsA("BasePart") and p.Transparency == 0 then
-                                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                                if hrp then
-                                    hrp.CFrame = part.CFrame
-                                    wait(1)
-                                    -- Teleport back to spawn
-                                    for _, s in pairs(game.Workspace:GetDescendants()) do
-                                        if s:IsA("BasePart") and (s.Name == "Spawn" or s.Name == "PlayerSpawn") then
-                                            hrp.CFrame = s.CFrame  * CFrame.new(0, 20, 0)
-                                            break
-                                        end
-                                    end
-                                end
-                            end
-                        end
+					    if processing then return end
+					    processing = true
+					
+					    wait()
+					
+					    for _, p in part:GetDescendants() do
+					        if p:IsA("BasePart") and p.Transparency == 0 then
+					            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+					            if hrp then
+					                hrp.CFrame = part.CFrame
+					                wait(1)
+					                for _, s in pairs(game.Workspace:GetDescendants()) do
+					                    if s:IsA("BasePart") and (s.Name == "Spawn" or s.Name == "PlayerSpawn") then
+					                        hrp.CFrame = s.CFrame * CFrame.new(0, 20, 0)
+					                        break
+					                    end
+					                end
+					            end
+					        end
+					    end
+					
+					    processing = false
 					end)
 				end
 			end
