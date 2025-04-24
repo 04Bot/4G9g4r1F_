@@ -165,7 +165,7 @@ logText.RichText = true
 logText.Text = [[
 <b>[FIX] Fixed collecting rare eggs</b>
 <b></b>
-<b>V 0.1.2</b>
+<b>V 0.1.3</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
