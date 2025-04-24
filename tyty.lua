@@ -224,7 +224,7 @@ local function moveFrame(innerFrame, targetPosition)
 	tween:Play()  -- Joue l'animation
 end
 
-local speed = 25  -- Vitesse en unités par seconde
+local speed = 22  -- Vitesse en unités par seconde
 
 -- Fonction pour trouver la pièce la plus proche dans chaque "CoinContainer"
 local function findFarthestCoinFromPlayer(targetPlayer)
