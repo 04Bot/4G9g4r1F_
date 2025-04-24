@@ -163,10 +163,9 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[ADDED] Move when the coin is collected by a other player</b>
-<b>[FIX] Lag when a coin despawn</b>
+<b>[ADDED] Now farming RARE EGGS</b>
 <b></b>
-<b>V 0.1.1</b>
+<b>V 0.1.2</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -225,7 +224,7 @@ local function moveFrame(innerFrame, targetPosition)
 	tween:Play()  -- Joue l'animation
 end
 
-local speed = 22  -- Vitesse en unités par seconde
+local speed = 25  -- Vitesse en unités par seconde
 
 -- Fonction pour trouver la pièce la plus proche dans chaque "CoinContainer"
 local function findFarthestCoinFromPlayer(targetPlayer)
@@ -372,30 +371,63 @@ local function moveToCoinEclipse()
 	end
 end
 
+local rareEggsSpawn
+
 local function reset()
+	local player = game.Players.LocalPlayer
 	local coinText
-	if player.PlayerGui.MainGUI.Game:FindFirstChild("CoinBags") then
-		coinText = player.PlayerGui.MainGUI.Game.CoinBags.Container.Coin.Full
-	elseif player.PlayerGui.MainGUI:FindFirstChild("Lobby") then
-		coinText = player.PlayerGui.MainGUI.Lobby.Dock.CoinBags.Container.Coin.Full
+	
+	local gui = player:FindFirstChild("PlayerGui")
+	if gui and gui:FindFirstChild("MainGUI") then
+		local mainGUI = gui.MainGUI
+		if mainGUI:FindFirstChild("Game") and mainGUI.Game:FindFirstChild("CoinBags") then
+			coinText = mainGUI.Game.CoinBags.Container.Coin.Full
+		elseif mainGUI:FindFirstChild("Lobby") then
+			coinText = mainGUI.Lobby.Dock.CoinBags.Container.Coin.Full
+		end
 	end
+
+	if not coinText then return end
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
-        if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
-            rootPart.CFrame = game.Workspace:FindFirstChild(murder):FindFirstChild("HumanoidRootPart").CFrame
-        else
-            player.Character.Humanoid.Health = 0
-        end
-		--[[for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-            if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
-                local player = game.Players.LocalPlayer
-                if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    player.Character.HumanoidRootPart.CFrame = i.CFrame
-                    break -- Sortie après avoir téléporté le joueur à un spawn
-                end
-            end
-        end]]
+		if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
+			rootPart.CFrame = game.Workspace:FindFirstChild(murder).HumanoidRootPart.CFrame
+		else
+			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
+				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") then
+					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+					if hrp then
+						hrp.CFrame = spawnPoint.CFrame
+						break
+					end
+				end
+			end
+
+			for _, obj in ipairs(game.Workspace:GetDescendants()) do
+				if obj.Name == "CoinContainer" then
+					rareEggsSpawn = obj.ChildAdded:Connect(function(part)
+						wait()
+                        for _, p in part:GetDescendants() do
+                            if p:IsA("BasePart") and p.Transparency == 0 then
+                                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                                if hrp then
+                                    hrp.CFrame = part.CFrame
+                                    wait(1)
+                                    -- Teleport back to spawn
+                                    for _, s in pairs(game.Workspace:GetDescendants()) do
+                                        if s:IsA("BasePart") and (s.Name == "Spawn" or s.Name == "PlayerSpawn") then
+                                            hrp.CFrame = s.CFrame
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                        end
+					end)
+				end
+			end
+		end
 	end)
 end
 
@@ -505,6 +537,10 @@ local function onCharacterAdded(newCharacter)
 
 	wait(4)
     farm = false
+    if rareEggsSpawn then
+        rareEggsSpawn:Disconnect()
+        rareEggsSpawn = nil
+    end
 	if active_AutoFarmEclipse then
 		stopAutoFarmEclipse()
 		wait(2)
