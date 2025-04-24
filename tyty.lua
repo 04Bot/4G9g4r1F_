@@ -417,7 +417,7 @@ local function reset()
                                     -- Teleport back to spawn
                                     for _, s in pairs(game.Workspace:GetDescendants()) do
                                         if s:IsA("BasePart") and (s.Name == "Spawn" or s.Name == "PlayerSpawn") then
-                                            hrp.CFrame = s.CFrame
+                                            hrp.CFrame = s.CFrame  * CFrame.new(0, 20, 0)
                                             break
                                         end
                                     end
