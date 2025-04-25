@@ -414,12 +414,13 @@ local function reset()
 					    if processing then return end
 					    processing = true
 					
-					    wait(0.5)
+					    wait()
 					
 					    for _, p in part:GetDescendants() do
 					        if p:IsA("BasePart") and p.Transparency == 0 then
 					            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 					            if hrp then
+							wait(0.5)				
 					                hrp.CFrame = part.CFrame * CFrame.new(0, 5, 0)
 					                wait(1)
 					                for _, s in pairs(game.Workspace:GetDescendants()) do
