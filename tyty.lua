@@ -402,7 +402,7 @@ local function reset()
 				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") then
 					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 					if hrp then
-						hrp.CFrame = spawnPoint.CFrame
+						hrp.CFrame = spawnPoint.CFrame * CFrame.new(0, 20, 0)
 						break
 					end
 				end
