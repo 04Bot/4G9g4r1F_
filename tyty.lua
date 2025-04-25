@@ -163,9 +163,9 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[FIX] Fixed collecting rare eggs</b>
+<b>[FIX] Fixed tp lobby when full</b>
 <b></b>
-<b>V 0.1.3</b>
+<b>V 0.1.4</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -395,6 +395,9 @@ local function reset()
 		if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
 			rootPart.CFrame = game.Workspace:FindFirstChild(murder).HumanoidRootPart.CFrame
 		else
+			if rootTween then
+				rootTween:Cancel()
+			end
 			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
 				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") then
 					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -411,13 +414,13 @@ local function reset()
 					    if processing then return end
 					    processing = true
 					
-					    wait()
+					    wait(0.5)
 					
 					    for _, p in part:GetDescendants() do
 					        if p:IsA("BasePart") and p.Transparency == 0 then
 					            local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 					            if hrp then
-					                hrp.CFrame = part.CFrame
+					                hrp.CFrame = part.CFrame * CFrame.new(0, 5, 0)
 					                wait(1)
 					                for _, s in pairs(game.Workspace:GetDescendants()) do
 					                    if s:IsA("BasePart") and (s.Name == "Spawn" or s.Name == "PlayerSpawn") then
