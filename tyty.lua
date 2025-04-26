@@ -325,7 +325,7 @@ local function moveToCoinEclipse()
 				cleanupFallPrevention()
 				moveToCoinEclipse()
 			elseif distance > 300 then
-				wait(math.random(3,6))
+				--wait(math.random(3,6))
                 workspace.Gravity = 0
 				if rootTween then
 					rootTween:Cancel()
