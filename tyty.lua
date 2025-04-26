@@ -317,7 +317,7 @@ end
 local function isDangerousPlayerNearby(radius)
     for _, playerName in ipairs(dangerousPlayers) do
         local player = game.Players:FindFirstChild(playerName)
-        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and playerName ~= game.Players.LocalPlayer.Name then
             local playerPos = player.Character.HumanoidRootPart.Position
             if (playerPos - rootPart.Position).Magnitude <= radius then
                 return true
