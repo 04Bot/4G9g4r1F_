@@ -163,9 +163,9 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[FIX] Fixed tp lobby when full</b>
+<b>[FIX] Multiple Accounts farming</b>
 <b></b>
-<b>V 0.1.4</b>
+<b>V 0.1.5</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -325,6 +325,7 @@ local function moveToCoinEclipse()
 				cleanupFallPrevention()
 				moveToCoinEclipse()
 			elseif distance > 300 then
+				wait(math.random(3,6))
                 workspace.Gravity = 0
 				if rootTween then
 					rootTween:Cancel()
@@ -339,7 +340,6 @@ local function moveToCoinEclipse()
 				rootPart.CFrame = finalCFrame
 
 				cleanConnections()
-                wait(math.random(3,6))
 				cleanupFallPrevention()
 				moveToCoinEclipse()
 			else
