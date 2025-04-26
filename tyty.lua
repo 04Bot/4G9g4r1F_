@@ -164,7 +164,7 @@ logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
 <b>[FIX] Multiple Accounts farming</b>
-<b>[ADDED] Random coin while using alt (ask me to put username)
+<b>[ADDED] Random coin while using alt (ask me to put username)</b>
 <b></b>
 <b>V 0.1.6.1</b>
 ]]  -- Ajoute ici tes logs de changement
