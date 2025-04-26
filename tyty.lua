@@ -164,8 +164,9 @@ logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
 <b>[FIX] Multiple Accounts farming</b>
+<b>[ADDED] Random coin while using alt (ask me to put username)
 <b></b>
-<b>V 0.1.5</b>
+<b>V 0.1.6.1</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
@@ -282,11 +283,63 @@ local function cleanupFallPrevention()
 	humanoid.PlatformStand = false
 end
 
+-- Liste des joueurs dangereux à éviter
+local dangerousPlayers = {
+    "Jr_myR4",
+    "vrvkriovjesnzqdbfbfb",
+    "AngelFruit78"
+}
+
+-- Fonction pour trouver une pièce random
+local function findRandomCoin()
+    local coins = {}
+
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "CoinContainer" then
+            for _, coin in ipairs(obj:GetDescendants()) do
+                if coin:IsA("BasePart") and coin.Transparency == 0 then
+                    table.insert(coins, coin)
+                end
+            end
+        end
+    end
+
+    if #coins > 0 then
+        local randomCoin = coins[math.random(1, #coins)]
+        local distance = (randomCoin.Position - rootPart.Position).Magnitude
+        return randomCoin, distance
+    else
+        return nil, math.huge
+    end
+end
+
+-- Fonction pour vérifier si un joueur dangereux est proche
+local function isDangerousPlayerNearby(radius)
+    for _, playerName in ipairs(dangerousPlayers) do
+        local player = game.Players:FindFirstChild(playerName)
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local playerPos = player.Character.HumanoidRootPart.Position
+            if (playerPos - rootPart.Position).Magnitude <= radius then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- Fonction principale pour bouger vers une pièce
 local function moveToCoinEclipse()
 	if not active_AutoFarmEclipse or not character:FindFirstChild("HumanoidRootPart") then return end
 
 	if farm then
-        local coin, distance = findNearestCoin()
+        local coin, distance
+
+        -- Si un joueur dangereux est proche, prendre une pièce random, sinon nearest
+        if isDangerousPlayerNearby(5) then
+            coin, distance = findRandomCoin()
+        else
+            coin, distance = findNearestCoin()
+        end
 
 		if coin then
 			local coinConnection
@@ -317,7 +370,7 @@ local function moveToCoinEclipse()
 			end
 
             local duration = distance / speed
-			
+
 			if distance <= 2 then
                 coin:Destroy()
 				cleanConnections()
@@ -325,8 +378,7 @@ local function moveToCoinEclipse()
 				cleanupFallPrevention()
 				moveToCoinEclipse()
 			elseif distance > 300 then
-				--wait(math.random(3,6))
-                workspace.Gravity = 0
+				workspace.Gravity = 0
 				if rootTween then
 					rootTween:Cancel()
 				end
