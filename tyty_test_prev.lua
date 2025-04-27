@@ -163,10 +163,9 @@ logText.Size = UDim2.new(1, 0, 0, 150) -- Taille ajustée pour le texte
 logText.Position = UDim2.new(0, 0, 0, 25)
 logText.RichText = true
 logText.Text = [[
-<b>[FIX] Multiple Accounts farming</b>
-<b>[ADDED] Random coin while using alt (ask me to put username)</b>
+<b>[ADDED] AutoFarm now undermap</b>
 <b></b>
-<b>V 0.1.6.1</b>
+<b>V 0.2.0</b>
 ]]  -- Ajoute ici tes logs de changement
 logText.TextSize = 16
 logText.TextColor3 = Color3.new(1, 1, 1)
