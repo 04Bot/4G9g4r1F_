@@ -397,15 +397,6 @@ end
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
 	workspace.Gravity = 196.2
-	for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
-		if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
-			local player = game.Players.LocalPlayer
-			if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-				player.Character.HumanoidRootPart.CFrame = i.CFrame * CFrame.new(0, 20, 0)
-				break -- Sortie après avoir téléporté le joueur à un spawn
-			end
-		end
-	end
 	character.Humanoid.UseJumpPower = true
 	character.Humanoid.PlatformStand = false
 	if rootTween then
@@ -476,6 +467,15 @@ local toggleActions = {
 			startAutoFarm()
 		else
 			autoFarm = false
+			for _, i in pairs(game:GetService("Workspace"):GetDescendants()) do
+				if i:IsA("BasePart") and (i.Name == "Spawn" or i.Name == "PlayerSpawn") then
+					local player = game.Players.LocalPlayer
+					if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+						player.Character.HumanoidRootPart.CFrame = i.CFrame * CFrame.new(0, 20, 0)
+						break -- Sortie après avoir téléporté le joueur à un spawn
+					end
+				end
+			end
 			stopAutoFarm()
 		end
 	end,
@@ -668,16 +668,15 @@ for i, name in ipairs(tabs) do
 		label.TextWrapped = true
 		label.Text = [[
 <b><font color="rgb(0,170,255)">TEAMERS-HUB</font></b><br/>
-<b>Changelog – v0.21</b>
+<b>Changelog – v0.22</b>
 
-<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "X-Ray"<br/>
-<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "Auto Reset"<br/>
-<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "Auto Farm Rare Eggs"<br/>
-<font color="rgb(255,255,0)">~ Amélioration :</font> Interface plus fluide<br/>
-<font color="rgb(255,100,100)">- Correction :</font> Bug de fermeture du menu<br/>
+<font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)<br/>
+<font color="rgb(255,100,100)">- Correction :</font> Bug auto farm<br/>
+		⚠️ bug X-ray (fait x-ray les pièces + joueurs) <br/>
 
 <font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
 ]]
+		--<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "X-Ray"<br/>
 		label.Parent = page
 	end
 
@@ -708,3 +707,21 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		end
 	end
 end)
+
+-- Gestion des personnages
+local function onCharacterAdded(newCharacter)
+	character = newCharacter
+	rootPart = character:WaitForChild("HumanoidRootPart")
+	humanoid = character:WaitForChild("Humanoid")
+
+    farm = false
+    if rareEggsSpawn then
+        rareEggsSpawn:Disconnect()
+        rareEggsSpawn = nil
+    end
+	if active_AutoFarmEclipse then
+		stopAutoFarmEclipse()
+		wait(2)
+		startAutoFarmEclipse()
+	end
+end
