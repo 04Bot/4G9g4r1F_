@@ -782,13 +782,13 @@ local function onCharacterAdded(newCharacter)
 		rareEggsSpawn:Disconnect()
 		rareEggsSpawn = nil
 	end
+    if endRound then
+		fling()
+	end
 	if autoFarm then
 		stopAutoFarm()
 		wait(2)
 		startAutoFarm()
-	end
-	if endRound then
-		fling()
 	end
 end
 
