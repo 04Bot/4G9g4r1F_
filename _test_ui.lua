@@ -17,6 +17,7 @@ local speed = 22
 local autoFarm = false
 local autoFarmRareEggs = false
 local autoReset = false
+local endRound = false
 
 -- UI Setup
 local screenGui = Instance.new("ScreenGui", playerGui)
@@ -295,6 +296,37 @@ local function moveToCoin()
 	end
 end
 
+local RunService = game:GetService("RunService")
+local murderDied = false
+
+local function fling()
+	while not murderDied and murder do
+		local p = game.Players.LocalPlayer
+		local c = p.Character
+		local h = c:WaitForChild("HumanoidRootPart")
+
+		-- Get the target part to fling
+		local Target = game.Workspace:FindFirstChild(murder):WaitForChild("HumanoidRootPart")
+
+		local pos_UU = h.CFrame
+
+		local Thrust = Instance.new('BodyThrust', p.Character.HumanoidRootPart)
+		Thrust.Force = Vector3.new(9999,9999,9999)
+		Thrust.Name = "YeetForce"
+
+		for i = 1, 200 do
+			p.Character.HumanoidRootPart.CFrame = Target.CFrame
+			Thrust.Location = Target.Position
+			game:FindService("RunService").Heartbeat:wait()
+		end
+
+        Thrust:Destroy()
+		c.Humanoid.PlatformStand = false
+		h.CFrame = pos_UU
+		wait(2)
+	end
+end
+
 local rareEggsSpawn
 local processing = false
 
@@ -316,11 +348,11 @@ local function reset()
 
 	coinText:GetPropertyChangedSignal("Visible"):Connect(function()
 		farm = false
-        if rootTween then
-				rootTween:Cancel()
+		if rootTween then
+			rootTween:Cancel()
 		end
 		if ascendTween then
-				ascendTween:Cancel()
+			ascendTween:Cancel()
 		end
 		if murder == "juju59lulu1" or murder == "Vellrox_YT" or murder == "coeursn" then
 			rootPart.CFrame = game.Workspace:FindFirstChild(murder).HumanoidRootPart.CFrame
@@ -365,7 +397,7 @@ local function reset()
 				end
 			end
 		elseif autoReset then
-            for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
+			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
 				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") and not (spawnPoint.Parent.Parent.Name == "Lobby") then
 					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 					if hrp then
@@ -374,7 +406,7 @@ local function reset()
 					end
 				end
 			end
-            wait(0.5)
+			wait(0.5)
 			character.Humanoid.Health = 0
 		else
 			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
@@ -385,6 +417,9 @@ local function reset()
 						break
 					end
 				end
+			end
+			if endRound then
+				fling()
 			end
 		end
 	end)
@@ -441,7 +476,14 @@ espEvent.OnClientEvent:Connect(function(message)
 	for playerName, data in pairs(message) do
 		local player = game.Players:FindFirstChild(playerName)
 		if player and type(data) == "table" and data.Role == "Murderer" then
+            local character_ = player.Character or player:WaitForChild("Character")
+            local humanoid_ = character_:WaitForChild("Humanoid")
+
 			murder = tostring(player)
+			murderDied = false
+			humanoid_.Died:Connect(function()
+				murderDied = true
+			end)
 		end
 	end
 end)
@@ -489,7 +531,7 @@ local toggleActions = {
 			stopAutoFarm()
 		end
 	end,
-	
+
 	["Auto Farm Rare Eggs"] = function(enabled)
 		if enabled then
 			autoFarmRareEggs = true
@@ -497,7 +539,7 @@ local toggleActions = {
 			autoFarmRareEggs = false
 		end
 	end,
-	
+
 	["Auto Reset"] = function(enabled)
 		if enabled then
 			autoReset = true
@@ -506,6 +548,14 @@ local toggleActions = {
 		end
 	end,
 	
+	["End Round"] = function(enabled)
+		if enabled then
+			endRound = true
+		else
+			endRound = false
+		end
+	end,
+
 	["⚠️ X-Ray"] = function(enabled)
 		if enabled then
 			enableXRay()
@@ -528,6 +578,7 @@ for i, name in ipairs(tabs) do
 			{"Auto Farm", false},
 			{"Auto Farm Rare Eggs", false},
 			{"Auto Reset", false},
+			{"End Round", false}
 		}
 
 		for i, info in ipairs(toggles) do
@@ -678,15 +729,15 @@ for i, name in ipairs(tabs) do
 		label.TextWrapped = true
 		label.Text = [[
 <b><font color="rgb(0,170,255)">TEAMERS-HUB</font></b><br/>
-<b>Changelog – v0.22</b>
+<b>Changelog – v0.22a</b>
 
 <font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)
-<font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (se relance après la mort + tp map)
-<font color="rgb(255,100,100)">- Correction (BUG):</font> auto reset<br/>
+<font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (mini bug)
+<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "End Round"<br/>
 ⚠️ bug X-ray (fait x-ray les pièces + joueurs)
 ]]
 
---<font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
+		--<font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
 		--<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "X-Ray"<br/>
 		label.Parent = page
 	end
@@ -725,16 +776,19 @@ local function onCharacterAdded(newCharacter)
 	rootPart = character:WaitForChild("HumanoidRootPart")
 	humanoid = character:WaitForChild("Humanoid")
 
-    farm = false
-    wait(4)
-    if rareEggsSpawn then
-        rareEggsSpawn:Disconnect()
-        rareEggsSpawn = nil
-    end
+	farm = false
+	wait(4)
+	if rareEggsSpawn then
+		rareEggsSpawn:Disconnect()
+		rareEggsSpawn = nil
+	end
 	if autoFarm then
 		stopAutoFarm()
 		wait(2)
 		startAutoFarm()
+	end
+	if endRound then
+		fling()
 	end
 end
 
