@@ -670,12 +670,12 @@ for i, name in ipairs(tabs) do
 <b><font color="rgb(0,170,255)">TEAMERS-HUB</font></b><br/>
 <b>Changelog – v0.22</b>
 
-<font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)<br/>
-<font color="rgb(255,100,100)">- Correction :</font> Bug auto farm<br/>
-		⚠️ bug X-ray (fait x-ray les pièces + joueurs) <br/>
-
-<font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
+<font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)
+<font color="rgb(255,100,100)">- Correction :</font> Bug auto farm
+⚠️ bug X-ray (fait x-ray les pièces + joueurs)
 ]]
+
+--<font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
 		--<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "X-Ray"<br/>
 		label.Parent = page
 	end
