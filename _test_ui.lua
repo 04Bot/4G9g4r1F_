@@ -209,10 +209,6 @@ local function moveToCoin()
 					tweenConnection:Disconnect()
 					tweenConnection = nil
 				end
-                --[[if ascendTween then
-                    ascendTween:Disconnect()
-					ascendTween = nil
-                end]]
 			end
 
 			coinConnection = coin:GetPropertyChangedSignal("Transparency"):Connect(function()
@@ -320,7 +316,7 @@ local function fling()
 			game:FindService("RunService").Heartbeat:wait()
 		end
 
-        Thrust:Destroy()
+		Thrust:Destroy()
 		c.Humanoid.PlatformStand = false
 		h.CFrame = pos_UU
 		wait(2)
@@ -478,8 +474,8 @@ espEvent.OnClientEvent:Connect(function(message)
 	for playerName, data in pairs(message) do
 		local player = game.Players:FindFirstChild(playerName)
 		if player and type(data) == "table" and data.Role == "Murderer" then
-            local character_ = player.Character or player:WaitForChild("Character")
-            local humanoid_ = character_:WaitForChild("Humanoid")
+			local character_ = player.Character or player:WaitForChild("Character")
+			local humanoid_ = character_:WaitForChild("Humanoid")
 
 			murder = tostring(player)
 			murderDied = false
@@ -549,7 +545,7 @@ local toggleActions = {
 			autoReset = false
 		end
 	end,
-	
+
 	["⚠️ End Round"] = function(enabled)
 		if enabled then
 			endRound = true
@@ -578,6 +574,7 @@ for i, name in ipairs(tabs) do
 	if name == "AutoFarm" then
 		local toggles = {
 			{"Auto Farm", false},
+			{"Auto Farm Speed", false},
 			{"Auto Farm Rare Eggs", false},
 			{"Auto Reset", false},
 			{"⚠️ End Round", false}
@@ -586,67 +583,108 @@ for i, name in ipairs(tabs) do
 		for i, info in ipairs(toggles) do
 			local toggleName, toggleState = info[1], info[2]
 
-			local container = Instance.new("Frame")
-			container.Size = UDim2.new(1, -20, 0, 40)
-			container.Position = UDim2.new(0, 10, 0, (i - 1) * 50 + 10)
-			container.BackgroundTransparency = 1
-			container.Parent = page
+			if toggleName == "Auto Farm Speed" then
+				local container = Instance.new("Frame")
+				container.Size = UDim2.new(1, -20, 0, 40)
+				container.Position = UDim2.new(0, 10, 0, (i - 1) * 50 + 10)
+				container.BackgroundTransparency = 1
+				container.Parent = page
 
-			local label = Instance.new("TextLabel")
-			label.Size = UDim2.new(0.6, 0, 1, 0)
-			label.BackgroundTransparency = 1
-			label.Text = toggleName
-			label.TextColor3 = Color3.fromRGB(255, 255, 255)
-			label.TextSize = 18
-			label.Font = Enum.Font.SourceSansBold
-			label.TextXAlignment = Enum.TextXAlignment.Left
-			label.Parent = container
+				local label = Instance.new("TextLabel")
+				label.Size = UDim2.new(0.6, 0, 1, 0)
+				label.BackgroundTransparency = 1
+				label.Text = toggleName
+				label.TextColor3 = Color3.fromRGB(255, 255, 255)
+				label.TextSize = 18
+				label.Font = Enum.Font.SourceSansBold
+				label.TextXAlignment = Enum.TextXAlignment.Left
+				label.Parent = container
 
-			local toggle = Instance.new("Frame")
-			toggle.Size = UDim2.new(0, 50, 0, 25)
-			toggle.Position = UDim2.new(1, -60, 0.5, -12)
-			toggle.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-			toggle.BorderSizePixel = 0
-			toggle.Parent = container
+				local text = Instance.new("TextBox")
+				text.Size = UDim2.new(0, 50, 0, 25)
+				text.Position = UDim2.new(1, -60, 0.5, -12)
+				text.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+				text.BorderSizePixel = 0
+				text.PlaceholderText = "22"
+				text.Text = ""
+				text.Font = Enum.Font.SourceSansBold
+				text.TextSize = 18
+				text.TextColor3 = Color3.new(0.839216, 0.839216, 0.839216)
+				text.Parent = container
+				
+				text.Changed:Connect(function()
+					local newText = text.Text
+                    local number = tonumber(newText)
+                    if number then
+                        speed = number
+                    end
+				end)
 
-			local corner = Instance.new("UICorner", toggle)
-			corner.CornerRadius = UDim.new(0, 12)
+				local corner = Instance.new("UICorner", text)
+				corner.CornerRadius = UDim.new(0, 8)
+			else
+				local container = Instance.new("Frame")
+				container.Size = UDim2.new(1, -20, 0, 40)
+				container.Position = UDim2.new(0, 10, 0, (i - 1) * 50 + 10)
+				container.BackgroundTransparency = 1
+				container.Parent = page
 
-			local knob = Instance.new("Frame")
-			knob.Size = UDim2.new(0, 21, 0, 21)
-			knob.Position = UDim2.new(0, 2, 0, 2)
-			knob.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-			knob.BorderSizePixel = 0
-			knob.Parent = toggle
+				local label = Instance.new("TextLabel")
+				label.Size = UDim2.new(0.6, 0, 1, 0)
+				label.BackgroundTransparency = 1
+				label.Text = toggleName
+				label.TextColor3 = Color3.fromRGB(255, 255, 255)
+				label.TextSize = 18
+				label.Font = Enum.Font.SourceSansBold
+				label.TextXAlignment = Enum.TextXAlignment.Left
+				label.Parent = container
 
-			Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+				local toggle = Instance.new("Frame")
+				toggle.Size = UDim2.new(0, 50, 0, 25)
+				toggle.Position = UDim2.new(1, -60, 0.5, -12)
+				toggle.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+				toggle.BorderSizePixel = 0
+				toggle.Parent = container
 
-			local isOn = false
+				local corner = Instance.new("UICorner", toggle)
+				corner.CornerRadius = UDim.new(0, 12)
 
-			local function updateToggle(state)
-				isOn = state
-				local targetPos = state and UDim2.new(1, -23, 0, 2) or UDim2.new(0, 2, 0, 2)
-				local color = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 60)
-				local knobColor = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)
+				local knob = Instance.new("Frame")
+				knob.Size = UDim2.new(0, 21, 0, 21)
+				knob.Position = UDim2.new(0, 2, 0, 2)
+				knob.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+				knob.BorderSizePixel = 0
+				knob.Parent = toggle
 
-				TweenService:Create(knob, TweenInfo.new(0.2), {Position = targetPos}):Play()
-				TweenService:Create(toggle, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
-				knob.BackgroundColor3 = knobColor
-			end
+				Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
 
-			toggle.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					local newState = not isOn
-					updateToggle(newState)
+				local isOn = false
 
-					-- Appelle l'action liée à ce toggle
-					if toggleActions[toggleName] then
-						toggleActions[toggleName](newState)
-					end
+				local function updateToggle(state)
+					isOn = state
+					local targetPos = state and UDim2.new(1, -23, 0, 2) or UDim2.new(0, 2, 0, 2)
+					local color = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 60)
+					local knobColor = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)
+
+					TweenService:Create(knob, TweenInfo.new(0.2), {Position = targetPos}):Play()
+					TweenService:Create(toggle, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
+					knob.BackgroundColor3 = knobColor
 				end
-			end)
 
-			updateToggle(false)
+				toggle.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						local newState = not isOn
+						updateToggle(newState)
+
+						-- Appelle l'action liée à ce toggle
+						if toggleActions[toggleName] then
+							toggleActions[toggleName](newState)
+						end
+					end
+				end)
+
+				updateToggle(false)
+			end
 		end
 	elseif name == "Visuals" then
 		local toggles = {
@@ -735,7 +773,8 @@ for i, name in ipairs(tabs) do
 
 <font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)
 <font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (mini bug)
-<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "End Round"<br/>
+<font color="rgb(0,255,0)">+ Ajout :</font> Toggle "End Round"
+<font color="rgb(0,255,0)">+ Ajout :</font> TextBox "Auto Farm Speed"<br/>
 ⚠️ bug X-ray (fait x-ray les pièces + joueurs)
 ⚠️ bug End Round (Ver. Alpha (gros BUG possible))
 ]]
@@ -785,7 +824,7 @@ local function onCharacterAdded(newCharacter)
 		rareEggsSpawn:Disconnect()
 		rareEggsSpawn = nil
 	end
-    if endRound then
+	if endRound then
 		fling()
 	end
 	if autoFarm then
