@@ -726,6 +726,7 @@ local function onCharacterAdded(newCharacter)
 	humanoid = character:WaitForChild("Humanoid")
 
     farm = false
+    wait(4)
     if rareEggsSpawn then
         rareEggsSpawn:Disconnect()
         rareEggsSpawn = nil
