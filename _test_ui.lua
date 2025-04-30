@@ -681,7 +681,7 @@ for i, name in ipairs(tabs) do
 <b>Changelog – v0.22</b>
 
 <font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)
-<font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (se relance après la mort + tp map)<br/>
+<font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (se relance après la mort + tp map)
 <font color="rgb(255,100,100)">- Correction (BUG):</font> auto reset<br/>
 ⚠️ bug X-ray (fait x-ray les pièces + joueurs)
 ]]
