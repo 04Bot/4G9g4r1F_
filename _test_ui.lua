@@ -427,6 +427,7 @@ end
 
 -- Fonction pour démarrer l'auto-farm
 local function startAutoFarm()
+	autoFarm = true
 	reset()
 	moveToCoin()  -- Lancer la chasse à la première pièce
 	while autoFarm do
@@ -441,6 +442,7 @@ end
 
 -- Fonction pour arrêter l'auto-farm
 local function stopAutoFarm()
+	autoFarm = false
 	workspace.Gravity = 196.2
 	character.Humanoid.UseJumpPower = true
 	character.Humanoid.PlatformStand = false
@@ -548,7 +550,7 @@ local toggleActions = {
 		end
 	end,
 	
-	["End Round"] = function(enabled)
+	["⚠️ End Round"] = function(enabled)
 		if enabled then
 			endRound = true
 		else
@@ -578,7 +580,7 @@ for i, name in ipairs(tabs) do
 			{"Auto Farm", false},
 			{"Auto Farm Rare Eggs", false},
 			{"Auto Reset", false},
-			{"End Round", false}
+			{"⚠️ End Round", false}
 		}
 
 		for i, info in ipairs(toggles) do
@@ -735,6 +737,7 @@ for i, name in ipairs(tabs) do
 <font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (mini bug)
 <font color="rgb(0,255,0)">+ Ajout :</font> Toggle "End Round"<br/>
 ⚠️ bug X-ray (fait x-ray les pièces + joueurs)
+⚠️ bug End Round (Ver. Alpha (gros BUG possible))
 ]]
 
 		--<font color="rgb(200,200,200)"><i>Merci d'utiliser Teamers Hub ❤️</i></font>
