@@ -365,13 +365,23 @@ local function reset()
 				end
 			end
 		elseif autoReset then
-			player.Humanoid.Health = 0
-		else
-			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
-				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") and not spawnPoint.Parent.Parent.Name == "Lobby" then
+            for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
+				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") and not (spawnPoint.Parent.Parent.Name == "Lobby") then
 					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 					if hrp then
-						hrp.CFrame = spawnPoint.CFrame * CFrame.new(0, 20, 0)
+						hrp.CFrame = spawnPoint.CFrame * CFrame.new(0, 5, 0)
+						break
+					end
+				end
+			end
+            wait(0.5)
+			character.Humanoid.Health = 0
+		else
+			for _, spawnPoint in pairs(game.Workspace:GetDescendants()) do
+				if spawnPoint:IsA("BasePart") and (spawnPoint.Name == "Spawn" or spawnPoint.Name == "PlayerSpawn") and not (spawnPoint.Parent.Parent.Name == "Lobby") then
+					local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+					if hrp then
+						hrp.CFrame = spawnPoint.CFrame * CFrame.new(0, 5, 0)
 						break
 					end
 				end
@@ -496,7 +506,7 @@ local toggleActions = {
 		end
 	end,
 	
-	["X-Ray"] = function(enabled)
+	["⚠️ X-Ray"] = function(enabled)
 		if enabled then
 			enableXRay()
 		else
@@ -587,7 +597,7 @@ for i, name in ipairs(tabs) do
 		end
 	elseif name == "Visuals" then
 		local toggles = {
-			{"X-Ray", false}
+			{"⚠️ X-Ray", false}
 		}
 
 		for i, info in ipairs(toggles) do
@@ -671,7 +681,8 @@ for i, name in ipairs(tabs) do
 <b>Changelog – v0.22</b>
 
 <font color="rgb(255,255,0)">~ Amélioration :</font> Améliorations (petite)
-<font color="rgb(255,100,100)">- Correction :</font> Bug auto farm
+<font color="rgb(255,100,100)">- Correction (BUG):</font> auto farm (se relance après la mort + tp map)<br/>
+<font color="rgb(255,100,100)">- Correction (BUG):</font> auto reset<br/>
 ⚠️ bug X-ray (fait x-ray les pièces + joueurs)
 ]]
 
@@ -719,9 +730,11 @@ local function onCharacterAdded(newCharacter)
         rareEggsSpawn:Disconnect()
         rareEggsSpawn = nil
     end
-	if active_AutoFarmEclipse then
+	if autoFarm then
 		stopAutoFarm()
 		wait(2)
 		startAutoFarm()
 	end
 end
+
+player.CharacterAdded:Connect(onCharacterAdded)
