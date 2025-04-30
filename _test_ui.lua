@@ -720,8 +720,8 @@ local function onCharacterAdded(newCharacter)
         rareEggsSpawn = nil
     end
 	if active_AutoFarmEclipse then
-		stopAutoFarmEclipse()
+		stopAutoFarm()
 		wait(2)
-		startAutoFarmEclipse()
+		startAutoFarm()
 	end
 end
