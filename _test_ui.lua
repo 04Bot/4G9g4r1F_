@@ -140,7 +140,9 @@ end
 local dangerousPlayers = {
 	"Jr_myR4",
 	"vrvkriovjesnzqdbfbfb",
-	"AngelFruit78"
+	"AngelFruit78",
+	"Vellrox_YT",
+	"Blox_1568"
 }
 
 -- Fonction pour trouver une pièce random
